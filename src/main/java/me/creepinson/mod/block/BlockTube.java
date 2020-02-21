@@ -63,7 +63,7 @@ public class BlockTube extends BaseBlock implements IConnectable {
         if (entity == null)
             return;
 
-        CreepinoUtils.entityAccelerate(entity, state.getValue(FACING));
+        CreepinoUtils.entityAccelerate(entity, state.getValue(FACING).getOpposite());
         CreepinoUtils.entityLimitSpeed(entity, 0.5);
         CreepinoUtils.entityResetFall(entity);
     }
@@ -76,7 +76,7 @@ public class BlockTube extends BaseBlock implements IConnectable {
     @Override
     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
 
-        return !canConnectTo(blockAccess, new Vector3(pos), CreepinoUtils.getDirectionFromSide(new Vector3(pos), side.ordinal()));
+        return !canConnectToStrict(blockAccess, new Vector3(pos), CreepinoUtils.getDirectionFromSide(new Vector3(pos), side.ordinal()));
     }
 
     @Override
@@ -133,8 +133,13 @@ public class BlockTube extends BaseBlock implements IConnectable {
 
     }
 
+    public boolean canConnectToStrict(IBlockAccess world, Vector3 pos, EnumFacing side) {
+        return world.getBlockState(pos.add(side.getXOffset(), side.getYOffset(), side.getZOffset()).toBlockPos()).getBlock() == this && CreepinoUtils.getBlockMetadata(world, pos.toBlockPos().add(side.getXOffset(), side.getYOffset(), side.getZOffset())) ==  CreepinoUtils.getBlockMetadata(world, pos.toBlockPos());
+    }
+
     @Override
     public boolean canConnectTo(IBlockAccess world, Vector3 pos, EnumFacing side) {
-        return world.getBlockState(pos.toBlockPos().add(side.getXOffset(), side.getYOffset(), side.getZOffset())) == world.getBlockState(pos.toBlockPos());
+        return world.getBlockState(pos.add(side.getXOffset(), side.getYOffset(), side.getZOffset()).toBlockPos()).getBlock() == this;
+//        return world.getBlockState(pos.toBlockPos()).getBlock() == this && CreepinoUtils.getBlockMetadata(world, pos.toBlockPos().add(side.getXOffset(), side.getYOffset(), side.getZOffset())) ==  CreepinoUtils.getBlockMetadata(world, pos.toBlockPos());
     }
 }

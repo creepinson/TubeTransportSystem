@@ -34,7 +34,7 @@ public class RandomlyAddingAnything extends BaseMod {
 
     public RandomlyAddingAnything() {
         super(MOD_URL, MOD_ID, MOD_ID_SHORT, MOD_NAME, MOD_VERSION);
-        this.creativeTab.setItem(new ItemStack(Items.APPLE));
+
 //      this.hasCreativeTab = false;
     }
 

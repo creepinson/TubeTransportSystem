@@ -5,6 +5,7 @@ import me.creepinson.mod.api.IConnectable;
 import me.creepinson.mod.api.util.CreepinoUtils;
 import me.creepinson.mod.api.util.math.Vector3;
 import me.creepinson.mod.base.BaseBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -64,9 +65,9 @@ public class BlockStation extends BaseBlock implements IConnectable {
     public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
         if (entity == null)
             return;
-        int meta = world.getBlockMetadata(x, y, z);
+        int meta = CreepinoUtils.getBlockMetadata(world, pos);
 
-        if (!entity.isSneaking() && meta >= SHIFT && world.getBlock(x, y + 1, z) == BlockTube.instance && world.getBlockMetadata(x, y + 1, z) == ForgeDirection.UP.ordinal()) {
+        if (!entity.isSneaking() && meta >= SHIFT && world.getBlockState(pos.add(0, 1, 0)).getBlock() == CommonProxy.BLOCK_TUBE && CreepinoUtils.getBlockMetadata(world, pos.add(0, 1, 0)) == EnumFacing.UP.ordinal()) {
             CreepinoUtils.entityAccelerate(entity, EnumFacing.UP);
             CreepinoUtils.entityAccelerate(entity, EnumFacing.UP);
         }
@@ -76,7 +77,8 @@ public class BlockStation extends BaseBlock implements IConnectable {
 
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-        return this.getDefaultState().withProperty(FACING, facing);
+
+        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
 
     @Override
@@ -113,12 +115,12 @@ public class BlockStation extends BaseBlock implements IConnectable {
         if (meta >= SHIFT) { // top
             if (entity.isSneaking() && CreepinoUtils.getBlockMetadata(world, pos.add(0, 1, 0)) == EnumFacing.UP.ordinal())
                 axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.UP));
-            else if (world.getBlockState(pos.add(0, 1, 0)) != CommonProxy.BLOCK_TUBE.getDefaultState())
+            else if (world.getBlockState(pos.add(0, 1, 0)).getBlock() != CommonProxy.BLOCK_TUBE)
                 axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.UP));
         } else if (entity.posY >= pos.getY())
             if (entity.isSneaking() && CreepinoUtils.getBlockMetadata(world, pos.subtract(new BlockPos(0, 1, 0))) == EnumFacing.DOWN.ordinal())
                 axis.add(CreepinoUtils.getCollisionBoxPartFloor(new Vector3(pos)));
-            else if (world.getBlockState(pos.subtract(new BlockPos(0, 1, 0))) != CommonProxy.BLOCK_TUBE.getDefaultState())
+            else if (world.getBlockState(pos.subtract(new BlockPos(0, 1, 0))).getBlock() != CommonProxy.BLOCK_TUBE)
                 axis.add(CreepinoUtils.getCollisionBoxPartFloor(new Vector3(pos)));
             else if (CreepinoUtils.getBlockMetadata(world, pos.subtract(new BlockPos(0, 1, 0))) != EnumFacing.DOWN.ordinal())
                 axis.add(CreepinoUtils.getCollisionBoxPartFloor(new Vector3(pos)));
@@ -159,7 +161,12 @@ public class BlockStation extends BaseBlock implements IConnectable {
     }
 
     @Override
-    public boolean canConnectTo(IBlockAccess world, Vector3 pos, EnumFacing side) {
-        return world.getBlockState(pos.toBlockPos().add(side.getXOffset(), side.getYOffset(), side.getZOffset())) == world.getBlockState(pos.toBlockPos());
+    public boolean canConnectTo(IBlockAccess blockAccess, Vector3 pos, EnumFacing d) {
+        if (d != EnumFacing.UP && d != EnumFacing.DOWN)
+            return false;
+        Block block = blockAccess.getBlockState(new Vector3(d.getXOffset(), d.getYOffset(), d.getZOffset()).toBlockPos()).getBlock();
+        int meta = CreepinoUtils.getBlockMetadata(blockAccess, pos.add(d.getXOffset(), d.getYOffset(), d.getZOffset())), thisMeta = CreepinoUtils.getBlockMetadata(blockAccess, pos);
+        return block == this && thisMeta >= SHIFT ? meta == thisMeta - SHIFT : thisMeta + SHIFT == meta;
+
     }
 }

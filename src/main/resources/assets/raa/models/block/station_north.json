@@ -1,0 +1,11 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "north": "raa:blocks/station1",
+    "south": "raa:blocks/station2",
+    "east": "raa:blocks/station2",
+    "west": "raa:blocks/station2",
+    "up": "raa:blocks/station2",
+    "down": "raa:blocks/station1"
+  }
+}
