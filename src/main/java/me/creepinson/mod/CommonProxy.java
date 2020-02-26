@@ -5,12 +5,14 @@ import me.creepinson.mod.base.BaseBlock;
 import me.creepinson.mod.base.BaseProxy;
 import me.creepinson.mod.block.BlockStation;
 import me.creepinson.mod.block.BlockTube;
+import me.creepinson.mod.tile.TileEntityTube;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  * @author Creepinson http://gitlab.com/creepinson
@@ -34,6 +36,7 @@ public class CommonProxy extends BaseProxy {
 
         EasyRegistry.registerBlockWithItem(BLOCK_TUBE, new ResourceLocation(RandomlyAddingAnything.MOD_ID, "tube"));
         EasyRegistry.registerBlockWithItem(BLOCK_STATION, new ResourceLocation(RandomlyAddingAnything.MOD_ID, "station"));
+        GameRegistry.registerTileEntity(TileEntityTube.class, BLOCK_TUBE.getRegistryName());
     }
 
 

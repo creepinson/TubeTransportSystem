@@ -141,11 +141,6 @@ public class BlockStation extends BaseBlock implements IConnectable {
     }
 
     @Override
-    public boolean isConnectable() {
-        return true;
-    }
-
-    @Override
     public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
         return false;
     }
@@ -156,11 +151,6 @@ public class BlockStation extends BaseBlock implements IConnectable {
     }
 
     @Override
-    public void setConnectable(boolean b) {
-
-    }
-
-    @Override
     public boolean canConnectTo(IBlockAccess blockAccess, Vector3 pos, EnumFacing d) {
         if (d != EnumFacing.UP && d != EnumFacing.DOWN)
             return false;
@@ -168,5 +158,10 @@ public class BlockStation extends BaseBlock implements IConnectable {
         int meta = CreepinoUtils.getBlockMetadata(blockAccess, pos.add(d.getXOffset(), d.getYOffset(), d.getZOffset())), thisMeta = CreepinoUtils.getBlockMetadata(blockAccess, pos);
         return block == this && thisMeta >= SHIFT ? meta == thisMeta - SHIFT : thisMeta + SHIFT == meta;
 
+    }
+
+    @Override
+    public boolean canConnectToStrict(IBlockAccess world, Vector3 pos, EnumFacing d) {
+        return canConnectTo(world, pos, d);
     }
 }

@@ -18,7 +18,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 @Mod(modid = RandomlyAddingAnything.MOD_ID, name = RandomlyAddingAnything.MOD_NAME, version = RandomlyAddingAnything.MOD_VERSION/*, dependencies = "required-after:"*/)
 public class RandomlyAddingAnything extends BaseMod {
     public static final String MOD_ID = "raa", MOD_ID_SHORT = "raa", MOD_NAME = "Randomly Adding Anything", MOD_URL = "", MOD_VERSION = "1.0.0", MOD_DEPENDENCIES = "";
-    public static final boolean DEBUG = true; // DEFAULT = false
 
     // TODO: make creativecore not a requirement
 
