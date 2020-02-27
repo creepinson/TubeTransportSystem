@@ -37,6 +37,12 @@ public class RandomlyAddingAnything extends BaseMod {
 //      this.hasCreativeTab = false;
     }
 
+    public static void debug(String s) {
+        if(getInstance().isDebug()) {
+            getInstance().getLogger().info("DEBUG || " + s);
+        }
+    }
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event, proxy);

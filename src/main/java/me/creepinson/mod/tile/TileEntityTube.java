@@ -2,6 +2,7 @@ package me.creepinson.mod.tile;
 
 import me.creepinson.mod.TubeNetwork;
 import me.creepinson.mod.api.IConnectable;
+import me.creepinson.mod.api.util.BlockUtils;
 import me.creepinson.mod.api.util.CreepinoUtils;
 import me.creepinson.mod.api.util.math.Vector3;
 import me.creepinson.mod.block.BlockTube;
@@ -10,12 +11,16 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
+import java.util.Iterator;
+import java.util.Set;
+
 /**
  * @author Creepinson http://gitlab.com/creepinson
  * Project randomlyaa
  **/
 public class TileEntityTube extends TileEntity implements IConnectable {
     private TubeNetwork network;
+    public boolean isDestination;
 
     public TubeNetwork getNetwork() {
         return network;
@@ -28,10 +33,7 @@ public class TileEntityTube extends TileEntity implements IConnectable {
     @Override
     public void onLoad() {
         super.onLoad();
-        if (network == null) {
-            ((TileEntityTube) world.getTileEntity(pos)).setNetwork(new TubeNetwork(world));
-        }
-        network.refreshConnectedTubes(new Vector3(pos));
+
     }
 
     public boolean canConnectToStrict(IBlockAccess world, Vector3 pos, EnumFacing side) {

@@ -3,6 +3,7 @@ package me.creepinson.mod.block;
 import me.creepinson.mod.RandomlyAddingAnything;
 import me.creepinson.mod.TubeNetwork;
 import me.creepinson.mod.api.IConnectable;
+import me.creepinson.mod.api.util.BlockUtils;
 import me.creepinson.mod.api.util.CreepinoUtils;
 import me.creepinson.mod.api.util.math.Vector3;
 import me.creepinson.mod.base.BaseBlock;
@@ -31,9 +32,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Creepinson http://gitlab.com/creepinson
@@ -71,7 +70,13 @@ public class BlockTube extends BaseBlockWithTile {
     public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
         if (entity == null)
             return;
+
         TubeNetwork network = ((TileEntityTube) world.getTileEntity(pos)).getNetwork();
+        if (network == null) {
+            RandomlyAddingAnything.debug("Tube network at " + pos.toString() + " is null!");
+            return;
+        }
+
         CreepinoUtils.entityAccelerate(entity, state.getValue(FACING).getOpposite(), network.getSpeed());
 //        CreepinoUtils.entityLimitSpeed(entity, network.getSpeed());
         CreepinoUtils.entityResetFall(entity);
@@ -150,7 +155,41 @@ public class BlockTube extends BaseBlockWithTile {
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
+        super.onBlockAdded(world, pos, state);
+        TileEntity tileEntity = world.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTube) {
+            TileEntityTube thisTube = (TileEntityTube) tileEntity;
+            List<TileEntityTube> tubes = new ArrayList<>();
+            for (EnumFacing f : EnumFacing.values()) {
+                TileEntity t = world.getTileEntity(pos.offset(f));
+                if (t instanceof TileEntityTube) {
+                    tubes.add((TileEntityTube) t);
+                }
+            }
+            if (!tubes.isEmpty()) {
+                for (TileEntityTube tile : tubes) {
+                    if (tile != null && !tile.isInvalid()) {
+                        if (tile.getNetwork() != null && thisTube.getNetwork() == null) {
+                            tile.getNetwork().refreshConnectedTubes(new Vector3(pos));
+                            thisTube.setNetwork(tile.getNetwork());
+                            RandomlyAddingAnything.debug("Connecting to existing network at " + tile.getPos());
+                        }
+                    }
+                }
+            } else {
+                if (thisTube.getNetwork() == null) {
+                    thisTube.setNetwork(new TubeNetwork(world));
+                    RandomlyAddingAnything.debug("Creating new network at " + thisTube.getPos());
+                }
+            }
+
+        }
+    }
+
+    @Override
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand
+            hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         TileEntityTube tile = ((TileEntityTube) world.getTileEntity(pos));
         if (!world.isRemote && tile.getNetwork() != null) {
             if (player.getHeldItem(hand) != ItemStack.EMPTY) return false;
@@ -160,17 +199,17 @@ public class BlockTube extends BaseBlockWithTile {
                 tile.getNetwork().setSpeed(tile.getNetwork().getSpeed() + TubeNetwork.INCREMENT);
             }
             Iterator<Vector3> it = tile.getNetwork().getTubes().iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 Vector3 v = it.next();
 
                 TileEntity te = world.getTileEntity(v.toBlockPos());
-                if(te == null || te.isInvalid()) {
+                if (te == null || te.isInvalid()) {
                     it.remove();
                 }
 
-                if(te instanceof TileEntityTube) {
-                    TileEntityTube t = (TileEntityTube)te;
-                    if(t.getNetwork() != null) {
+                if (te instanceof TileEntityTube) {
+                    TileEntityTube t = (TileEntityTube) te;
+                    if (t.getNetwork() != null) {
                         t.getNetwork().setSpeed(tile.getNetwork().getSpeed());
                     }
                 }
