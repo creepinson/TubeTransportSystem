@@ -1,5 +1,7 @@
-# Tube Transport System
+# TubesPlus
 Original: https://github.com/enhancedportals/TubeTransportSystem
+Credits go to [polyrobot](https://www.curseforge.com/members/polyrobot/projects)
+for the original mods Tube Transport System & Enhanced Portals.
 
 # Documentation
 

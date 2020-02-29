@@ -1,12 +1,11 @@
-package me.creepinson.mod;
+package me.creepinson.tubesplus;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.Mod;
 
 /**
  * @author Creepinson http://gitlab.com/creepinson
- * Project randomlyaa
+ * Project tubesplus
  **/
 
 public class ClientProxy extends CommonProxy {

@@ -1,0 +1,11 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "north": "tubesplus:blocks/station1",
+    "south": "tubesplus:blocks/station2",
+    "east": "tubesplus:blocks/station2",
+    "west": "tubesplus:blocks/station2",
+    "up": "tubesplus:blocks/station2",
+    "down": "tubesplus:blocks/station1"
+  }
+}

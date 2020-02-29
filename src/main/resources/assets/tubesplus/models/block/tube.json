@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "raa:blocks/tube/0"
+    "all": "tubesplus:blocks/tube/0"
   }
 }

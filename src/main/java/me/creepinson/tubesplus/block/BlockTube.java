@@ -1,13 +1,12 @@
-package me.creepinson.mod.block;
+package me.creepinson.tubesplus.block;
 
-import me.creepinson.mod.RandomlyAddingAnything;
-import me.creepinson.mod.TubeNetwork;
-import me.creepinson.mod.api.IConnectable;
-import me.creepinson.mod.api.util.CreepinoUtils;
-import me.creepinson.mod.api.util.math.Vector3;
-import me.creepinson.mod.base.BaseBlock;
-import me.creepinson.mod.base.BaseBlockWithTile;
-import me.creepinson.mod.tile.TileEntityTube;
+import me.creepinson.creepinoutils.api.util.CreepinoUtils;
+import me.creepinson.creepinoutils.api.util.math.Vector3;
+import me.creepinson.creepinoutils.base.BaseBlockWithTile;
+import me.creepinson.tubesplus.TubesPlus;
+import me.creepinson.tubesplus.TubeNetwork;
+import me.creepinson.tubesplus.client.gui.TubeNetworkConfigGui;
+import me.creepinson.tubesplus.tile.TileEntityTube;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -15,11 +14,13 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -29,18 +30,18 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Creepinson http://gitlab.com/creepinson
- * Project randomlyaa
+ * Project tubesplus
  **/
 public class BlockTube extends BaseBlockWithTile {
-    public static final PropertyDirection FACING = PropertyDirection.create("facing");
+    public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
     public BlockTube(Material mat, ResourceLocation name, CreativeTabs tab) {
         super(mat, name, tab);
@@ -71,10 +72,26 @@ public class BlockTube extends BaseBlockWithTile {
     public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
         if (entity == null)
             return;
+        state = world.getBlockState(pos);
         TubeNetwork network = ((TileEntityTube) world.getTileEntity(pos)).getNetwork();
-        CreepinoUtils.entityAccelerate(entity, state.getValue(FACING).getOpposite(), network.getSpeed());
-//        CreepinoUtils.entityLimitSpeed(entity, network.getSpeed());
+
+        if (network == null) {
+            if (!world.isRemote)
+                TubesPlus.debug("Tube network at " + pos.toString() + " is null!");
+
+            CreepinoUtils.entityAccelerate(entity, state.getValue(FACING).getOpposite());
+            CreepinoUtils.entityLimitSpeed(entity, 0.1);
+        } else {
+            CreepinoUtils.entityAccelerate(entity, state.getValue(FACING).getOpposite(), network.getSpeed());
+            CreepinoUtils.entityLimitSpeed(entity, network.getSpeed());
+        }
+        if (world.isAirBlock(pos.offset(EnumFacing.DOWN)) && state.getValue(FACING) != EnumFacing.UP && state.getValue(FACING) != EnumFacing.DOWN) {
+            entity.motionY = 0;
+        }
+        entity.velocityChanged = true;
+
         CreepinoUtils.entityResetFall(entity);
+
     }
 
     @Nullable
@@ -152,36 +169,28 @@ public class BlockTube extends BaseBlockWithTile {
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         TileEntityTube tile = ((TileEntityTube) world.getTileEntity(pos));
-        if (!world.isRemote && tile.getNetwork() != null) {
+        if (tile != null && !tile.isInvalid()) {
             if (player.getHeldItem(hand) != ItemStack.EMPTY) return false;
+
             if (player.isSneaking()) {
-                tile.getNetwork().setSpeed(tile.getNetwork().getSpeed() - TubeNetwork.INCREMENT);
-            } else {
-                tile.getNetwork().setSpeed(tile.getNetwork().getSpeed() + TubeNetwork.INCREMENT);
+                TubesPlus.debug("TEST");
+                player.openGui(TubesPlus.getInstance(), 0, world, pos.getX(), pos.getY(), pos.getZ());
             }
-            Iterator<Vector3> it = tile.getNetwork().getTubes().iterator();
-            while(it.hasNext()) {
-                Vector3 v = it.next();
-
-                TileEntity te = world.getTileEntity(v.toBlockPos());
-                if(te == null || te.isInvalid()) {
-                    it.remove();
-                }
-
-                if(te instanceof TileEntityTube) {
-                    TileEntityTube t = (TileEntityTube)te;
-                    if(t.getNetwork() != null) {
-                        t.getNetwork().setSpeed(tile.getNetwork().getSpeed());
-                    }
-                }
-            }
-            if (RandomlyAddingAnything.getInstance().isDebug()) {
-                RandomlyAddingAnything.getInstance().getLogger().info("Tube Network Speed Changed To: " + tile.getNetwork().getSpeed());
-            }
-
-            return false;
         }
         return true;
+    }
+
+    @Override
+    public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
+        super.onBlockAdded(world, pos, state);
+        if (!world.isRemote) {
+            TileEntity tileEntity = world.getTileEntity(pos);
+            if (tileEntity instanceof TileEntityTube) {
+                TileEntityTube thisTube = (TileEntityTube) tileEntity;
+                thisTube.refresh();
+
+            }
+        }
     }
 
     @Nullable

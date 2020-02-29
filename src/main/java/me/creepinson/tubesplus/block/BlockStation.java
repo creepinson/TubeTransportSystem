@@ -1,10 +1,10 @@
-package me.creepinson.mod.block;
+package me.creepinson.tubesplus.block;
 
-import me.creepinson.mod.CommonProxy;
-import me.creepinson.mod.api.IConnectable;
-import me.creepinson.mod.api.util.CreepinoUtils;
-import me.creepinson.mod.api.util.math.Vector3;
-import me.creepinson.mod.base.BaseBlock;
+import me.creepinson.creepinoutils.api.IConnectable;
+import me.creepinson.creepinoutils.api.util.CreepinoUtils;
+import me.creepinson.creepinoutils.api.util.math.Vector3;
+import me.creepinson.creepinoutils.base.BaseBlock;
+import me.creepinson.tubesplus.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * @author Creepinson http://gitlab.com/creepinson
- * Project randomlyaa
+ * Project tubesplus
  **/
 public class BlockStation extends BaseBlock implements IConnectable {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
