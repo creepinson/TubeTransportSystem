@@ -19,11 +19,9 @@ import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = TubesPlus.MOD_ID, name = TubesPlus.MOD_NAME, version = TubesPlus.MOD_VERSION/*, dependencies = "required-after:"*/)
 public class TubesPlus extends BaseMod {
-    public static final String MOD_ID = "tubesplus", MOD_ID_SHORT = "tubes", MOD_NAME = "Tubes Plus", MOD_URL = "https://gitlab.com/creepino-creations/tts", MOD_VERSION = "1.0.0", MOD_DEPENDENCIES = "";
+    public static final String MOD_ID = "tubesplus", MOD_ID_SHORT = "tubes", MOD_NAME = "Tubes Plus", MOD_URL = "", MOD_VERSION = "1.0.0", MOD_DEPENDENCIES = "";
     public static final SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel(MOD_ID);
-
-    // TODO: make creativecore not a requirement
-
+    
     @Mod.Instance(TubesPlus.MOD_ID)
     private static TubesPlus INSTANCE;
 
@@ -57,7 +55,7 @@ public class TubesPlus extends BaseMod {
     public void init(FMLInitializationEvent event) {
         super.init(event);
         NETWORK.registerMessage(PacketChangeTubeSpeedServer.Handler.class, PacketChangeTubeSpeedServer.class, 0, Side.SERVER);
-        NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+        NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 //        GameRegistry.registerTileEntity(TileEntityAnimationTest.class, new ResourceLocation(MOD_ID, "tile_animation_test"));
     }
 

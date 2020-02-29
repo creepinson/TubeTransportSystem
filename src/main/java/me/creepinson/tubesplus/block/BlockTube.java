@@ -79,10 +79,10 @@ public class BlockTube extends BaseBlockWithTile {
             if (!world.isRemote)
                 TubesPlus.debug("Tube network at " + pos.toString() + " is null!");
 
-            CreepinoUtils.entityAccelerate(entity, state.getValue(FACING).getOpposite());
+            CreepinoUtils.entityVelocity(entity, state.getValue(FACING).getOpposite());
             CreepinoUtils.entityLimitSpeed(entity, 0.1);
         } else {
-            CreepinoUtils.entityAccelerate(entity, state.getValue(FACING).getOpposite(), network.getSpeed());
+            CreepinoUtils.entityVelocity(entity, state.getValue(FACING).getOpposite(), network.getSpeed());
             CreepinoUtils.entityLimitSpeed(entity, network.getSpeed());
         }
         if (world.isAirBlock(pos.offset(EnumFacing.DOWN)) && state.getValue(FACING) != EnumFacing.UP && state.getValue(FACING) != EnumFacing.DOWN) {
@@ -162,7 +162,9 @@ public class BlockTube extends BaseBlockWithTile {
         TileEntityTube tile = (TileEntityTube) world.getTileEntity(fromPos);
         if (tile != null && !tile.isInvalid()) {
             TubeNetwork network = tile.getNetwork();
-            network.refreshConnectedTubes(new Vector3(fromPos));
+            if (network != null) {
+                network.refreshConnectedTubes(new Vector3(fromPos));
+            }
         }
     }
 
@@ -173,7 +175,6 @@ public class BlockTube extends BaseBlockWithTile {
             if (player.getHeldItem(hand) != ItemStack.EMPTY) return false;
 
             if (player.isSneaking()) {
-                TubesPlus.debug("TEST");
                 player.openGui(TubesPlus.getInstance(), 0, world, pos.getX(), pos.getY(), pos.getZ());
             }
         }

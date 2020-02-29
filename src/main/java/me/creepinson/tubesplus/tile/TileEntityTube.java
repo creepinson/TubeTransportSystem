@@ -6,10 +6,14 @@ import me.creepinson.creepinoutils.api.util.math.Vector3;
 import me.creepinson.tubesplus.TubeNetwork;
 import me.creepinson.tubesplus.TubesPlus;
 import me.creepinson.tubesplus.block.BlockTube;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IInteractionObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,7 +23,7 @@ import java.util.List;
  * @author Creepinson http://gitlab.com/creepinson
  * Project tubesplus
  **/
-public class TileEntityTube extends TileEntity implements IConnectable {
+public class TileEntityTube extends TileEntity implements IConnectable, IInteractionObject {
     private TubeNetwork network;
 
     public TubeNetwork getNetwork() {
@@ -74,6 +78,7 @@ public class TileEntityTube extends TileEntity implements IConnectable {
 //        return world.getBlockState(pos.toBlockPos()).getBlock() == this && CreepinoUtils.getBlockMetadata(world, pos.toBlockPos().add(side.getXOffset(), side.getYOffset(), side.getZOffset())) ==  CreepinoUtils.getBlockMetadata(world, pos.toBlockPos());
     }
 
+
     public void updateSpeed() {
         if (this.getNetwork() != null) {
             this.getNetwork().refreshConnectedTubes(new Vector3(pos));
@@ -121,5 +126,25 @@ public class TileEntityTube extends TileEntity implements IConnectable {
                 TubesPlus.debug("Creating new network at " + this.getPos());
             }
         }
+    }
+
+    @Override
+    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
+        return null;
+    }
+
+    @Override
+    public String getGuiID() {
+        return TubesPlus.getInstance().modId + ":tubeconfig";
+    }
+
+    @Override
+    public String getName() {
+        return "Tube Network Configuration";
+    }
+
+    @Override
+    public boolean hasCustomName() {
+        return true;
     }
 }

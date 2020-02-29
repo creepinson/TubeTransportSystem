@@ -1,6 +1,6 @@
 package me.creepinson.tubesplus;
 
-import com.draco18s.hardlib.EasyRegistry;
+import me.creepinson.creepinoutils.EasyRegistry;
 import me.creepinson.creepinoutils.base.BaseBlock;
 import me.creepinson.creepinoutils.base.BaseProxy;
 import me.creepinson.tubesplus.block.BlockStation;
@@ -18,23 +18,14 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  **/
 public class CommonProxy extends BaseProxy {
 
-    public static BaseBlock BLOCK_TUBE;
-    public static BaseBlock BLOCK_STATION;
-
     @Override
     public void preInit() {
         TubesPlus.getInstance().creativeTab.setItem(new ItemStack(Items.APPLE));
-
-        BLOCK_TUBE = new BlockTube(Material.CLOTH, new ResourceLocation(TubesPlus.MOD_ID, "tube"), TubesPlus.getInstance().creativeTab);
-        BLOCK_STATION = new BlockStation(Material.CLOTH, new ResourceLocation(TubesPlus.MOD_ID, "station"), TubesPlus.getInstance().creativeTab);
     }
 
     @Override
     public void registerBlocks() {
 
-        EasyRegistry.registerBlockWithItem(BLOCK_TUBE, new ResourceLocation(TubesPlus.MOD_ID, "tube"));
-        EasyRegistry.registerBlockWithItem(BLOCK_STATION, new ResourceLocation(TubesPlus.MOD_ID, "station"));
-        GameRegistry.registerTileEntity(TileEntityTube.class, BLOCK_TUBE.getRegistryName());
     }
 
 

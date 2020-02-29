@@ -5,6 +5,7 @@ import me.creepinson.creepinoutils.api.util.CreepinoUtils;
 import me.creepinson.creepinoutils.api.util.math.Vector3;
 import me.creepinson.creepinoutils.base.BaseBlock;
 import me.creepinson.tubesplus.CommonProxy;
+import me.creepinson.tubesplus.RegistryHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -67,7 +68,7 @@ public class BlockStation extends BaseBlock implements IConnectable {
             return;
         int meta = CreepinoUtils.getBlockMetadata(world, pos);
 
-        if (!entity.isSneaking() && meta >= SHIFT && world.getBlockState(pos.add(0, 1, 0)).getBlock() == CommonProxy.BLOCK_TUBE && CreepinoUtils.getBlockMetadata(world, pos.add(0, 1, 0)) == EnumFacing.UP.ordinal()) {
+        if (!entity.isSneaking() && meta >= SHIFT && world.getBlockState(pos.add(0, 1, 0)).getBlock() == RegistryHandler.BLOCK_TUBE && CreepinoUtils.getBlockMetadata(world, pos.add(0, 1, 0)) == EnumFacing.UP.ordinal()) {
             CreepinoUtils.entityAccelerate(entity, EnumFacing.UP);
             CreepinoUtils.entityAccelerate(entity, EnumFacing.UP);
         }
@@ -115,12 +116,12 @@ public class BlockStation extends BaseBlock implements IConnectable {
         if (meta >= SHIFT) { // top
             if (entity.isSneaking() && CreepinoUtils.getBlockMetadata(world, pos.add(0, 1, 0)) == EnumFacing.UP.ordinal())
                 axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.UP));
-            else if (world.getBlockState(pos.add(0, 1, 0)).getBlock() != CommonProxy.BLOCK_TUBE)
+            else if (world.getBlockState(pos.add(0, 1, 0)).getBlock() != RegistryHandler.BLOCK_TUBE)
                 axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.UP));
         } else if (entity.posY >= pos.getY())
             if (entity.isSneaking() && CreepinoUtils.getBlockMetadata(world, pos.subtract(new BlockPos(0, 1, 0))) == EnumFacing.DOWN.ordinal())
                 axis.add(CreepinoUtils.getCollisionBoxPartFloor(new Vector3(pos)));
-            else if (world.getBlockState(pos.subtract(new BlockPos(0, 1, 0))).getBlock() != CommonProxy.BLOCK_TUBE)
+            else if (world.getBlockState(pos.subtract(new BlockPos(0, 1, 0))).getBlock() != RegistryHandler.BLOCK_TUBE)
                 axis.add(CreepinoUtils.getCollisionBoxPartFloor(new Vector3(pos)));
             else if (CreepinoUtils.getBlockMetadata(world, pos.subtract(new BlockPos(0, 1, 0))) != EnumFacing.DOWN.ordinal())
                 axis.add(CreepinoUtils.getCollisionBoxPartFloor(new Vector3(pos)));
