@@ -2,7 +2,6 @@ package me.creepinson.tubesplus;
 
 import me.creepinson.creepinoutils.base.BaseMod;
 import me.creepinson.tubesplus.client.gui.GuiHandler;
-import me.creepinson.tubesplus.network.PacketChangeTubeSpeedServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -10,7 +9,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * @author Creepinson http://gitlab.com/creepinson
@@ -54,9 +52,6 @@ public class TubesPlus extends BaseMod {
     @Override
     public void init(FMLInitializationEvent event) {
         super.init(event);
-        NETWORK.registerMessage(PacketChangeTubeSpeedServer.Handler.class, PacketChangeTubeSpeedServer.class, 0, Side.SERVER);
-        NETWORK.registerMessage(PacketChangeTubeSpeedServer.Handler.class, PacketChangeTubeSpeedServer.class, 1, Side.CLIENT);
-
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 
         //        GameRegistry.registerTileEntity(TileEntityAnimationTest.class, new ResourceLocation(MOD_ID, "tile_animation_test"));

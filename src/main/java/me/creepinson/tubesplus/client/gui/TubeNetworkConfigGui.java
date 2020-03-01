@@ -1,11 +1,8 @@
 package me.creepinson.tubesplus.client.gui;
 
-import me.creepinson.tubesplus.TubesPlus;
 import me.creepinson.tubesplus.gui.container.ContainerTubeNetworkConfig;
-import me.creepinson.tubesplus.network.PacketChangeTubeSpeedServer;
 import me.creepinson.tubesplus.tile.TileEntityTube;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraftforge.fml.client.config.GuiSlider;
 import net.minecraftforge.fml.relauncher.Side;
