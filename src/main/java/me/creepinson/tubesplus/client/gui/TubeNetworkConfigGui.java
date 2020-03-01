@@ -1,6 +1,8 @@
 package me.creepinson.tubesplus.client.gui;
 
+import me.creepinson.tubesplus.TubesPlus;
 import me.creepinson.tubesplus.gui.container.ContainerTubeNetworkConfig;
+import me.creepinson.tubesplus.network.PacketTubeSpeed;
 import me.creepinson.tubesplus.tile.TileEntityTube;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -34,7 +36,9 @@ public class TubeNetworkConfigGui extends GuiContainer //extend GuiContainer if 
             this.buttonList.add(speedSlider = new GuiSlider(0, (width / 2) - 75, 50, 150, 25, "Tube Speed: ", "", container.tile.getNetwork().minSpeed, container.tile.getNetwork().maxSpeed, container.tile.getNetwork().getSpeed(), true, true, new GuiSlider.ISlider() {
                 @Override
                 public void onChangeSliderValue(GuiSlider slider) {
-                    container.tile.getNetwork().setSpeed(slider.sliderValue*10);
+                    container.tile.getNetwork().setSpeed(slider.sliderValue);
+                    container.tile.updateSpeed();
+                    TubesPlus.NETWORK.sendToServer(new PacketTubeSpeed(container.tile.getPos(), slider.sliderValue));
                 }
             }));
         }
@@ -62,7 +66,7 @@ public class TubeNetworkConfigGui extends GuiContainer //extend GuiContainer if 
         // The xSizeOfTexture and ySizeOfTexture assume that the texture is 256x256. so 128 and 128 always reference half of the texture.
         // Look in the Gui class to see what else you can do here (like rendering textures and strings)
         String str = "Tube Network Configuration";
-        this.drawCenteredString(fontRenderer, str, width / 2,  25, Color.white.getRGB()); //this is where the white variable we set up at the beginning is used
+        this.drawCenteredString(fontRenderer, str, width / 2, 25, Color.white.getRGB()); //this is where the white variable we set up at the beginning is used
         super.drawScreen(x, y, f);
         /*Here is a trick:
            If you reset the texture after "super.drawScreen(x, y, f);" (this.mc.renderEngine.bindTexture("path/to/the/background/texture"),

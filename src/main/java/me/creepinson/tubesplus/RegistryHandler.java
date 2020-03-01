@@ -27,11 +27,12 @@ public class RegistryHandler {
     public static BaseBlock BLOCK_TUBE;
     public static BaseBlock BLOCK_STATION;
 
+
+
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         BLOCK_TUBE = new BlockTube(Material.CLOTH, new ResourceLocation(TubesPlus.MOD_ID, "tube"), TubesPlus.getInstance().creativeTab);
         BLOCK_STATION = new BlockStation(Material.CLOTH, new ResourceLocation(TubesPlus.MOD_ID, "station"), TubesPlus.getInstance().creativeTab);
-        GameRegistry.registerTileEntity(TileEntityTube.class, RegistryHandler.BLOCK_TUBE.getRegistryName());
         event.getRegistry().registerAll(BLOCK_TUBE, BLOCK_STATION);
     }
 

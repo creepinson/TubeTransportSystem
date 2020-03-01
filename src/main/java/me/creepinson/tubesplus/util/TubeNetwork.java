@@ -21,9 +21,10 @@ public class TubeNetwork {
     public static final double INCREMENT = 0.01;
     public final World world;
     private Set<Vector3> tubes;
-    public final double maxSpeed = 10;
+    public final double maxSpeed = 1;
     public final double minSpeed = 0.01;
     private double speed = 0.1;
+    public static final double maxAcceleration = 5;
 
     public TubeNetwork(@Nonnull World world) {
         this.world = world;

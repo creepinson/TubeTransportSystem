@@ -55,7 +55,7 @@ public class BlockTube extends BaseBlockWithTile {
 
     @Override
     public BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, new IProperty[]{FACING});
+        return new BlockStateContainer(this, FACING);
     }
 
     @Override
@@ -67,18 +67,25 @@ public class BlockTube extends BaseBlockWithTile {
     public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
         if (entity == null)
             return;
-        state = world.getBlockState(pos);
         TubeNetwork network = ((TileEntityTube) world.getTileEntity(pos)).getNetwork();
 
         if (network == null) {
             if (!world.isRemote)
-                TubesPlus.debug("Tube network at " + pos.toString() + " is null!");
+                TubesPlus.getInstance().getLogger().warn("Tube network at " + pos.toString() + " is null!");
 
-            CreepinoUtils.entityVelocity(entity, state.getValue(FACING).getOpposite());
+            CreepinoUtils.entityAccelerate(entity, state.getValue(FACING));
             CreepinoUtils.entityLimitSpeed(entity, 0.1);
         } else {
-            CreepinoUtils.entityVelocity(entity, state.getValue(FACING).getOpposite(), network.getSpeed());
-            CreepinoUtils.entityLimitSpeed(entity, network.getSpeed());
+            CreepinoUtils.entityAccelerate(entity, state.getValue(FACING), network.getSpeed());
+            double speed = Math.abs(Math.sqrt(entity.motionX * entity.motionX + entity.motionY * entity.motionY + entity.motionZ * entity.motionZ));
+
+/*
+            if (!world.isRemote)
+                TubesPlus.debug("Speed: " + network.getSpeed());
+                // Log Speed For Testing
+*/
+
+
         }
         if (world.isAirBlock(pos.offset(EnumFacing.DOWN)) && state.getValue(FACING) != EnumFacing.UP && state.getValue(FACING) != EnumFacing.DOWN) {
             entity.motionY = 0;

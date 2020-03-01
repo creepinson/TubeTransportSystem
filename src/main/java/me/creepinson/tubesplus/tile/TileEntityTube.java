@@ -3,6 +3,7 @@ package me.creepinson.tubesplus.tile;
 import me.creepinson.creepinoutils.api.IConnectable;
 import me.creepinson.creepinoutils.api.util.CreepinoUtils;
 import me.creepinson.creepinoutils.api.util.math.Vector3;
+import me.creepinson.tubesplus.gui.container.ContainerTubeNetworkConfig;
 import me.creepinson.tubesplus.util.TubeNetwork;
 import me.creepinson.tubesplus.TubesPlus;
 import me.creepinson.tubesplus.block.BlockTube;
@@ -97,6 +98,7 @@ public class TileEntityTube extends TileEntity implements IConnectable, IInterac
                     TileEntityTube t = (TileEntityTube) te;
                     if (t.getNetwork() != null) {
                         t.getNetwork().setSpeed(this.getNetwork().getSpeed());
+
                     }
                 }
             }
@@ -134,7 +136,7 @@ public class TileEntityTube extends TileEntity implements IConnectable, IInterac
 
     @Override
     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
-        return null;
+        return new ContainerTubeNetworkConfig(this);
     }
 
     @Override
