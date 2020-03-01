@@ -1,15 +1,13 @@
 package me.creepinson.tubesplus.client.gui;
 
-import me.creepinson.creepinoutils.api.util.client.gui.Scrollbar;
 import me.creepinson.tubesplus.TubesPlus;
-import me.creepinson.tubesplus.network.PacketChangeTubeSpeedClient;
+import me.creepinson.tubesplus.gui.container.ContainerTubeNetworkConfig;
 import me.creepinson.tubesplus.network.PacketChangeTubeSpeedServer;
 import me.creepinson.tubesplus.tile.TileEntityTube;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraftforge.fml.client.config.GuiSlider;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -21,27 +19,25 @@ import java.awt.*;
  * Project Tubes Plus
  **/
 @SideOnly(Side.CLIENT)
-public class TubeNetworkConfigGui extends GuiScreen //extend GuiContainer if you want your gui to have an inventory
+public class TubeNetworkConfigGui extends GuiContainer //extend GuiContainer if you want your gui to have an inventory
 {
     //If you want your gui to change based on TileEntity values, reference the tile entity in the constructor
     //you must pass the tile entity using "return new GuiCustomClass(world.getTileEntity(x, y, z))" in the GuiHandler
-    TileEntityTube te;
     private GuiButton speedSlider;
 
     public TubeNetworkConfigGui(TileEntityTube te) {
-        this.te = te;
+        super(new ContainerTubeNetworkConfig(te));
     }
 
     @Override
     public void initGui() {
         this.buttonList.clear();
-        if (te.getNetwork() != null) {
-            this.buttonList.add(speedSlider = new GuiSlider(0, (width / 2), (height / 2) + 25, 150, 25, "Tube Speed: ", "", te.getNetwork().minSpeed, te.getNetwork().maxSpeed, te.getNetwork().getSpeed(), true, true, new GuiSlider.ISlider() {
+        ContainerTubeNetworkConfig container = ((ContainerTubeNetworkConfig) inventorySlots);
+        if (container.tile.getNetwork() != null) {
+            this.buttonList.add(speedSlider = new GuiSlider(0, (width / 2), (height / 2) + 25, 150, 25, "Tube Speed: ", "", container.tile.getNetwork().minSpeed, container.tile.getNetwork().maxSpeed, container.tile.getNetwork().getSpeed(), true, true, new GuiSlider.ISlider() {
                 @Override
                 public void onChangeSliderValue(GuiSlider slider) {
-                    TubesPlus.debug("slider val: " + slider.sliderValue);
-                    TubesPlus.NETWORK.sendToAllAround(new PacketChangeTubeSpeedClient(te, slider.sliderValue*10), new NetworkRegistry.TargetPoint(te.getWorld().provider.getDimension(), te.getPos().getX(), te.getPos().getY(), te.getPos().getZ(), 100));
-                    TubesPlus.NETWORK.sendToServer(new PacketChangeTubeSpeedServer(te, slider.sliderValue*10));
+                    container.tile.getNetwork().setSpeed(slider.sliderValue*10);
                 }
             }));
         }
@@ -74,5 +70,10 @@ public class TubeNetworkConfigGui extends GuiScreen //extend GuiContainer if you
            you can draw on top of everything, including buttons.
            Use this to texture buttons, if you don't want them to have text.`
         */
+    }
+
+    @Override
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+
     }
 }

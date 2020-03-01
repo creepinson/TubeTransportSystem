@@ -2,7 +2,6 @@ package me.creepinson.tubesplus;
 
 import me.creepinson.creepinoutils.base.BaseMod;
 import me.creepinson.tubesplus.client.gui.GuiHandler;
-import me.creepinson.tubesplus.network.PacketChangeTubeSpeedClient;
 import me.creepinson.tubesplus.network.PacketChangeTubeSpeedServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -56,7 +55,7 @@ public class TubesPlus extends BaseMod {
     public void init(FMLInitializationEvent event) {
         super.init(event);
         NETWORK.registerMessage(PacketChangeTubeSpeedServer.Handler.class, PacketChangeTubeSpeedServer.class, 0, Side.SERVER);
-        NETWORK.registerMessage(PacketChangeTubeSpeedClient.Handler.class, PacketChangeTubeSpeedClient.class, 1, Side.CLIENT);
+        NETWORK.registerMessage(PacketChangeTubeSpeedServer.Handler.class, PacketChangeTubeSpeedServer.class, 1, Side.CLIENT);
 
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 

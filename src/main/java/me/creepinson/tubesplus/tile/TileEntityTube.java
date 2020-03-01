@@ -25,6 +25,7 @@ import java.util.List;
  **/
 public class TileEntityTube extends TileEntity implements IConnectable, IInteractionObject {
     private TubeNetwork network;
+    private double tmpSpeed;
 
     public TubeNetwork getNetwork() {
         return network;
@@ -38,6 +39,10 @@ public class TileEntityTube extends TileEntity implements IConnectable, IInterac
     public void onLoad() {
         super.onLoad();
         this.refresh();
+        if (this.getNetwork() != null) {
+            this.getNetwork().setSpeed(tmpSpeed == 0 ? this.getNetwork().getSpeed() : tmpSpeed);
+            this.getNetwork().refreshConnectedTubes(new Vector3(pos));
+        }
     }
 
     @Override
@@ -62,10 +67,7 @@ public class TileEntityTube extends TileEntity implements IConnectable, IInterac
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        if (this.getNetwork() != null) {
-            this.getNetwork().setSpeed(compound.getDouble("speed"));
-            this.getNetwork().refreshConnectedTubes(new Vector3(pos));
-        }
+        this.tmpSpeed = compound.getDouble("speed");
     }
 
     public boolean canConnectToStrict(IBlockAccess world, Vector3 pos, EnumFacing side) {
