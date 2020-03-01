@@ -3,7 +3,7 @@ package me.creepinson.tubesplus.tile;
 import me.creepinson.creepinoutils.api.IConnectable;
 import me.creepinson.creepinoutils.api.util.CreepinoUtils;
 import me.creepinson.creepinoutils.api.util.math.Vector3;
-import me.creepinson.tubesplus.TubeNetwork;
+import me.creepinson.tubesplus.util.TubeNetwork;
 import me.creepinson.tubesplus.TubesPlus;
 import me.creepinson.tubesplus.block.BlockTube;
 import net.minecraft.entity.player.EntityPlayer;
@@ -115,7 +115,8 @@ public class TileEntityTube extends TileEntity implements IConnectable, IInterac
                     if (tile.getNetwork() != null && this.getNetwork() == null) {
                         tile.getNetwork().refreshConnectedTubes(new Vector3(pos));
                         this.setNetwork(tile.getNetwork());
-                        TubesPlus.debug("Connecting to existing network at " + tile.getPos());
+                        if (!world.isRemote)
+                            TubesPlus.debug("Connecting to existing network at " + tile.getPos());
                     }
                 }
             }
@@ -123,7 +124,8 @@ public class TileEntityTube extends TileEntity implements IConnectable, IInterac
             if (this.getNetwork() == null) {
                 this.setNetwork(new TubeNetwork(world));
                 this.getNetwork().refreshConnectedTubes(new Vector3(this.getPos()));
-                TubesPlus.debug("Creating new network at " + this.getPos());
+                if (!world.isRemote)
+                    TubesPlus.debug("Creating new network at " + this.getPos());
             }
         }
     }

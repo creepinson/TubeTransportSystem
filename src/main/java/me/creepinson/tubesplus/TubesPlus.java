@@ -2,6 +2,7 @@ package me.creepinson.tubesplus;
 
 import me.creepinson.creepinoutils.base.BaseMod;
 import me.creepinson.tubesplus.client.gui.GuiHandler;
+import me.creepinson.tubesplus.network.PacketChangeTubeSpeedClient;
 import me.creepinson.tubesplus.network.PacketChangeTubeSpeedServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -21,7 +22,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class TubesPlus extends BaseMod {
     public static final String MOD_ID = "tubesplus", MOD_ID_SHORT = "tubes", MOD_NAME = "Tubes Plus", MOD_URL = "", MOD_VERSION = "1.0.0", MOD_DEPENDENCIES = "";
     public static final SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel(MOD_ID);
-    
+
     @Mod.Instance(TubesPlus.MOD_ID)
     private static TubesPlus INSTANCE;
 
@@ -39,7 +40,7 @@ public class TubesPlus extends BaseMod {
     }
 
     public static void debug(String s) {
-        if(getInstance().isDebug()) {
+        if (getInstance().isDebug()) {
             getInstance().getLogger().info(s);
         }
     }
@@ -55,8 +56,11 @@ public class TubesPlus extends BaseMod {
     public void init(FMLInitializationEvent event) {
         super.init(event);
         NETWORK.registerMessage(PacketChangeTubeSpeedServer.Handler.class, PacketChangeTubeSpeedServer.class, 0, Side.SERVER);
+        NETWORK.registerMessage(PacketChangeTubeSpeedClient.Handler.class, PacketChangeTubeSpeedClient.class, 1, Side.CLIENT);
+
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
-//        GameRegistry.registerTileEntity(TileEntityAnimationTest.class, new ResourceLocation(MOD_ID, "tile_animation_test"));
+
+        //        GameRegistry.registerTileEntity(TileEntityAnimationTest.class, new ResourceLocation(MOD_ID, "tile_animation_test"));
     }
 
     @Mod.EventHandler

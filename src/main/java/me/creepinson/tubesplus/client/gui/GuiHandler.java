@@ -9,6 +9,8 @@ import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
+import javax.annotation.Nullable;
+
 public class GuiHandler implements IGuiHandler {
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
@@ -23,6 +25,7 @@ public class GuiHandler implements IGuiHandler {
         return null;
     }
 
+    @Nullable
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
@@ -35,4 +38,6 @@ public class GuiHandler implements IGuiHandler {
         }
         // It is common Java convention to "break;" a switch case, but because all my cases end in returns, I don't need to
     }
+
+
 }

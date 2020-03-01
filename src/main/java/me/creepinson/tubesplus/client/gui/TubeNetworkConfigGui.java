@@ -2,12 +2,14 @@ package me.creepinson.tubesplus.client.gui;
 
 import me.creepinson.creepinoutils.api.util.client.gui.Scrollbar;
 import me.creepinson.tubesplus.TubesPlus;
+import me.creepinson.tubesplus.network.PacketChangeTubeSpeedClient;
 import me.creepinson.tubesplus.network.PacketChangeTubeSpeedServer;
 import me.creepinson.tubesplus.tile.TileEntityTube;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.client.config.GuiSlider;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -30,13 +32,16 @@ public class TubeNetworkConfigGui extends GuiScreen //extend GuiContainer if you
         this.te = te;
     }
 
+    @Override
     public void initGui() {
         this.buttonList.clear();
         if (te.getNetwork() != null) {
-            this.buttonList.add(speedSlider = new GuiSlider(0, (width / 2), (height / 2) + 10, 100, 0, "Tube Speed: ", "", te.getNetwork().minSpeed, te.getNetwork().maxSpeed, te.getNetwork().getSpeed(), true, true, new GuiSlider.ISlider() {
+            this.buttonList.add(speedSlider = new GuiSlider(0, (width / 2), (height / 2) + 25, 150, 25, "Tube Speed: ", "", te.getNetwork().minSpeed, te.getNetwork().maxSpeed, te.getNetwork().getSpeed(), true, true, new GuiSlider.ISlider() {
                 @Override
                 public void onChangeSliderValue(GuiSlider slider) {
-                    TubesPlus.NETWORK.sendToServer(new PacketChangeTubeSpeedServer(te, slider.sliderValue));
+                    TubesPlus.debug("slider val: " + slider.sliderValue);
+                    TubesPlus.NETWORK.sendToAllAround(new PacketChangeTubeSpeedClient(te, slider.sliderValue*10), new NetworkRegistry.TargetPoint(te.getWorld().provider.getDimension(), te.getPos().getX(), te.getPos().getY(), te.getPos().getZ(), 100));
+                    TubesPlus.NETWORK.sendToServer(new PacketChangeTubeSpeedServer(te, slider.sliderValue*10));
                 }
             }));
         }
@@ -49,6 +54,7 @@ public class TubeNetworkConfigGui extends GuiScreen //extend GuiContainer if you
          * The text to be displayed on the button*/
     }
 
+    @Override
     public void actionPerformed(GuiButton button) {
 
     }

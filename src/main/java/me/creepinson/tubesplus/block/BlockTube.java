@@ -4,8 +4,7 @@ import me.creepinson.creepinoutils.api.util.CreepinoUtils;
 import me.creepinson.creepinoutils.api.util.math.Vector3;
 import me.creepinson.creepinoutils.base.BaseBlockWithTile;
 import me.creepinson.tubesplus.TubesPlus;
-import me.creepinson.tubesplus.TubeNetwork;
-import me.creepinson.tubesplus.client.gui.TubeNetworkConfigGui;
+import me.creepinson.tubesplus.util.TubeNetwork;
 import me.creepinson.tubesplus.tile.TileEntityTube;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
@@ -14,13 +13,11 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -30,11 +27,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Creepinson http://gitlab.com/creepinson
@@ -82,7 +76,7 @@ public class BlockTube extends BaseBlockWithTile {
             CreepinoUtils.entityVelocity(entity, state.getValue(FACING).getOpposite());
             CreepinoUtils.entityLimitSpeed(entity, 0.1);
         } else {
-            CreepinoUtils.entityVelocity(entity, state.getValue(FACING).getOpposite(), network.getSpeed());
+            CreepinoUtils.entityAccelerate(entity, state.getValue(FACING).getOpposite(), network.getSpeed());
             CreepinoUtils.entityLimitSpeed(entity, network.getSpeed());
         }
         if (world.isAirBlock(pos.offset(EnumFacing.DOWN)) && state.getValue(FACING) != EnumFacing.UP && state.getValue(FACING) != EnumFacing.DOWN) {

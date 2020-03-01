@@ -1,4 +1,4 @@
-package me.creepinson.tubesplus;
+package me.creepinson.tubesplus.util;
 
 import me.creepinson.creepinoutils.api.util.BlockUtils;
 import me.creepinson.creepinoutils.api.util.math.Vector3;
