@@ -7,6 +7,7 @@ import me.creepinson.tubesplus.TubesPlus;
 import me.creepinson.tubesplus.util.TubeNetwork;
 import me.creepinson.tubesplus.tile.TileEntityTube;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -35,7 +36,7 @@ import javax.annotation.Nullable;
  * Project tubesplus
  **/
 public class BlockTube extends BaseBlockWithTile {
-    public static final PropertyDirection FACING = BlockHorizontal.FACING;
+    public static final PropertyDirection FACING = BlockDirectional.FACING;
 
     public BlockTube(Material mat, ResourceLocation name, CreativeTabs tab) {
         super(mat, name, tab);
@@ -76,7 +77,7 @@ public class BlockTube extends BaseBlockWithTile {
             CreepinoUtils.entityVelocity(entity, state.getValue(FACING).getOpposite());
             CreepinoUtils.entityLimitSpeed(entity, 0.1);
         } else {
-            CreepinoUtils.entityAccelerate(entity, state.getValue(FACING).getOpposite(), network.getSpeed());
+            CreepinoUtils.entityVelocity(entity, state.getValue(FACING).getOpposite(), network.getSpeed());
             CreepinoUtils.entityLimitSpeed(entity, network.getSpeed());
         }
         if (world.isAirBlock(pos.offset(EnumFacing.DOWN)) && state.getValue(FACING) != EnumFacing.UP && state.getValue(FACING) != EnumFacing.DOWN) {

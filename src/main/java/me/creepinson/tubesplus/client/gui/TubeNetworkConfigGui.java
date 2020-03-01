@@ -31,7 +31,7 @@ public class TubeNetworkConfigGui extends GuiContainer //extend GuiContainer if 
         this.buttonList.clear();
         ContainerTubeNetworkConfig container = ((ContainerTubeNetworkConfig) inventorySlots);
         if (container.tile.getNetwork() != null) {
-            this.buttonList.add(speedSlider = new GuiSlider(0, (width / 2), (height / 2) + 25, 150, 25, "Tube Speed: ", "", container.tile.getNetwork().minSpeed, container.tile.getNetwork().maxSpeed, container.tile.getNetwork().getSpeed(), true, true, new GuiSlider.ISlider() {
+            this.buttonList.add(speedSlider = new GuiSlider(0, (width / 2) - 75, 50, 150, 25, "Tube Speed: ", "", container.tile.getNetwork().minSpeed, container.tile.getNetwork().maxSpeed, container.tile.getNetwork().getSpeed(), true, true, new GuiSlider.ISlider() {
                 @Override
                 public void onChangeSliderValue(GuiSlider slider) {
                     container.tile.getNetwork().setSpeed(slider.sliderValue*10);
@@ -56,11 +56,13 @@ public class TubeNetworkConfigGui extends GuiContainer //extend GuiContainer if 
     public void drawScreen(int x, int y, float f) {
         drawDefaultBackground();
 
-        GL11.glColor4f(0.0F, 1.0F, 1.0F, 1.0F);
+
+        drawRect(width / 4, 0, width - (width / 4), height / 2, Color.gray.getRGB());
         // Make sure your background texture is a multiple of 256x256.
         // The xSizeOfTexture and ySizeOfTexture assume that the texture is 256x256. so 128 and 128 always reference half of the texture.
         // Look in the Gui class to see what else you can do here (like rendering textures and strings)
-        this.drawString(fontRenderer, "Test Text", width / 2, height / 2, Color.white.getRGB()); //this is where the white variable we set up at the beginning is used
+        String str = "Tube Network Configuration";
+        this.drawCenteredString(fontRenderer, str, width / 2,  25, Color.white.getRGB()); //this is where the white variable we set up at the beginning is used
         super.drawScreen(x, y, f);
         /*Here is a trick:
            If you reset the texture after "super.drawScreen(x, y, f);" (this.mc.renderEngine.bindTexture("path/to/the/background/texture"),
