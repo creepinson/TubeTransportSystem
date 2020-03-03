@@ -16,6 +16,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -42,12 +43,16 @@ public class TileEntityGravityController extends TileEntity implements IAttracta
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
-    public void onGravity(RenderWorldLastEvent event) {
-        if(Minecraft.getMinecraft().player.hasCapability(GravityProvider.GRAVITY_CAP, null) && Minecraft.getMinecraft().player.getCapability(GravityProvider.GRAVITY_CAP, null).isAttracted() && Minecraft.getMinecraft().player.getCapability(GravityProvider.GRAVITY_CAP, null).isAttractedBy(this)) {
-            GravityClientUtils.orientCameraByGravity(0.03999999910593033F);
-        }
-        GravityClientUtils.orientCameraByGravity(0.03999999910593033F);
+    public void onGravity(EntityViewRenderEvent.CameraSetup event) {
+        EntityPlayer entity = Minecraft.getMinecraft().player;
+        IGravity gravity = entity.getCapability(GravityProvider.GRAVITY_CAP, null);
+        if (gravity == null)
+            return;
 
+        if (entity.getCapability(GravityProvider.GRAVITY_CAP, null).isAttractedBy(this)) {
+//            GravityClientUtils.orientCameraByGravity(0.03999999910593033F);
+            GravityClientUtils.orientCameraByGravity(1.5F);
+        }
     }
 
 

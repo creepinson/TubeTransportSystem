@@ -63,6 +63,7 @@ public class TubesPlus extends BaseMod {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        super.preInit(event, proxy);
         config = new ModConfig(this, "config") {
             @Override
             public void generate() {
@@ -98,7 +99,7 @@ public class TubesPlus extends BaseMod {
                 GsonUtils.getGson().toJson(main, fileWriter);
             }
         };
-        super.preInit(event, proxy);
+        config.save();
 //        EasyRegistry.registerBlockWithItem(BlockHandler.ANIMATION_TEST_BLOCK, new ResourceLocation(MOD_ID, "animation_test_block"));
     }
 

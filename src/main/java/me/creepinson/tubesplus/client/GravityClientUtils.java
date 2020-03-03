@@ -33,9 +33,6 @@ public class GravityClientUtils {
         GL11.glTranslatef(fixHeight * dir.shiftEyeX, fixHeight * dir.shiftEyeY, fixHeight * dir.shiftEyeZ);
         GL11.glTranslatef((float)entityLivingBase.posX * dir.shiftSneakX, (float)entityLivingBase.posY * dir.shiftSneakY, (float)entityLivingBase.posZ * dir.shiftSneakZ);
 
-        // TESTING
-        GL11.glRotatef(90.0F * (100.0F + (100.0F - 100.0F) * par1), 0.0F, 0.0F, 0.0F);
-
         if (gravity != null && gravity.getTurnRate() < 1.0F)
             GL11.glRotatef(90.0F * (gravity.getPreviousTurnRate() + (gravity.getTurnRate() - gravity.getPreviousTurnRate()) * par1), 0.0F, 0.0F, 0.0F);
     }

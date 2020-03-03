@@ -84,13 +84,13 @@ public class BlockTube extends BaseBlockWithTile {
                 TubesPlus.debug("Speed: " + network.getSpeed());
                 // Log Speed For Testing
 */
-
+            CreepinoUtils.entityLimitSpeed(entity, network.getSpeed());
 
         }
         if (world.isAirBlock(pos.offset(EnumFacing.DOWN)) && state.getValue(FACING) != EnumFacing.UP && state.getValue(FACING) != EnumFacing.DOWN) {
             entity.motionY = 0;
+            entity.velocityChanged = true;
         }
-        entity.velocityChanged = true;
 
         CreepinoUtils.entityResetFall(entity);
 
@@ -161,9 +161,9 @@ public class BlockTube extends BaseBlockWithTile {
 
     @Override
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        TileEntityTube tile = (TileEntityTube) world.getTileEntity(fromPos);
-        if (tile != null && !tile.isInvalid()) {
-            TubeNetwork network = tile.getNetwork();
+        TileEntity tile = world.getTileEntity(fromPos);
+        if (tile instanceof TileEntityTube && !tile.isInvalid()) {
+            TubeNetwork network = ((TileEntityTube)tile).getNetwork();
             if (network != null) {
                 network.refreshConnectedTubes(new Vector3(fromPos));
             }

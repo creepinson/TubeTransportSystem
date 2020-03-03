@@ -7,10 +7,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
 public class Gravity implements IGravity {
-    private boolean isAttracted;
-    private BlockPos attractedPos;
-    private GravityDirection gravityDirection;
-    private boolean isZeroGravity;
+    private boolean isAttracted = false;
+    private BlockPos attractedPos = BlockPos.ORIGIN;
+    private GravityDirection gravityDirection = GravityDirection.upTOdown_YN;
 
     private static final float TURN_SPEED_START = 0.05F;
 
@@ -109,13 +108,13 @@ public class Gravity implements IGravity {
     @Override
     public boolean setAttractedBy(IAttractableTileEntity tile) {
         this.attractedBy = tile;
-        this.setAttracted(true);
+        this.setAttracted(tile != null);
         return true;
     }
 
     @Override
     public boolean isAttractedBy(IAttractableTileEntity tile) {
-        return tile != null;
+        return this.isAttracted() && tile != null;
     }
 
     @Override

@@ -66,9 +66,10 @@ public class RegistryHandler {
     public static final ResourceLocation GRAVITY_CAP = new ResourceLocation(TubesPlus.getInstance().modId, "gravity");
 
     @SubscribeEvent
-    public static void attachCapability(AttachCapabilitiesEvent<EntityLivingBase> event) {
+    public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof EntityPlayer)
+            TubesPlus.debug("Added gravity capability for player.");
         event.addCapability(GRAVITY_CAP, new GravityProvider());
-        TubesPlus.debug("Added gravity capability for " + event.getObject().getName());
     }
 
 }
