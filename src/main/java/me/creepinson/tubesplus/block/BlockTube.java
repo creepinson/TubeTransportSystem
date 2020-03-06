@@ -70,9 +70,6 @@ public class BlockTube extends BaseBlockWithTile {
         TubeNetwork network = ((TileEntityTube) world.getTileEntity(pos)).getNetwork();
 
         if (network == null) {
-            if (!world.isRemote)
-                TubesPlus.getInstance().getLogger().warn("Tube network at " + pos.toString() + " is null!");
-
             CreepinoUtils.entityAccelerate(entity, state.getValue(FACING));
             CreepinoUtils.entityLimitSpeed(entity, 0.1);
         } else {

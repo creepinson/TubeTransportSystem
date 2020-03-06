@@ -63,13 +63,4 @@ public class RegistryHandler {
         ModelLoader.setCustomModelResourceLocation(BLOCK_GRAVITY_CONTROLLER.createItemBlock(), 0, new ModelResourceLocation(BLOCK_GRAVITY_CONTROLLER.getRegistryName(), "inventory"));
     }
 
-    public static final ResourceLocation GRAVITY_CAP = new ResourceLocation(TubesPlus.getInstance().modId, "gravity");
-
-    @SubscribeEvent
-    public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof EntityPlayer)
-            TubesPlus.debug("Added gravity capability for player.");
-        event.addCapability(GRAVITY_CAP, new GravityProvider());
-    }
-
 }

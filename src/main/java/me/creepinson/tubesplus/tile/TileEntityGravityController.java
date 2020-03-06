@@ -51,7 +51,7 @@ public class TileEntityGravityController extends TileEntity implements IAttracta
 
         if (entity.getCapability(GravityProvider.GRAVITY_CAP, null).isAttractedBy(this)) {
 //            GravityClientUtils.orientCameraByGravity(0.03999999910593033F);
-            GravityClientUtils.orientCameraByGravity(1.5F);
+            GravityClientUtils.orientCameraByGravity(1F);
         }
     }
 
@@ -118,9 +118,11 @@ public class TileEntityGravityController extends TileEntity implements IAttracta
             EntityPlayer entityPlayer = iterator.next();
             if (entityPlayer.isSneaking())
                 continue;
+
             IGravity gravity = entityPlayer.getCapability(GravityProvider.GRAVITY_CAP, null);
             if (gravity == null)
                 continue;
+            updateGravityDirectionState(entityPlayer);
             if (inGravityRange((Entity) entityPlayer, gravity.getDirection(), center.getX(), center.getY(), center.getZ(), this.gravityRange, this.type)) {
                 if (!gravity.isAttracted()) {
                     attractUpdateTickCount = 1;
@@ -229,6 +231,13 @@ public class TileEntityGravityController extends TileEntity implements IAttracta
 
     public boolean isStillInAttractedState(Entity entity) {
         return inGravityRange(entity, entity.getCapability(GravityProvider.GRAVITY_CAP, null).getDirection(), this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D, this.gravityRange, this.type);
+    }
+
+    public void updateGravityDirectionState(Entity entity) {
+        IGravity gravity = entity.getCapability(GravityProvider.GRAVITY_CAP, null);
+        if (gravity != null) {
+            GravityDirection gravityDirNew = gravity.getDirection();
+        }
     }
 
     @Override
