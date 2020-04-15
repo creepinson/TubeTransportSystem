@@ -1,9 +1,9 @@
 package me.creepinson.tubesplus.block;
 
-import me.creepinson.creepinoutils.api.IConnectable;
-import me.creepinson.creepinoutils.api.util.CreepinoUtils;
-import me.creepinson.creepinoutils.api.util.math.Vector3;
+import me.creepinson.creepinoutils.api.creepinoutilscore.math.Vector3;
 import me.creepinson.creepinoutils.base.BaseBlock;
+import me.creepinson.creepinoutils.util.util.CreepinoUtils;
+import me.creepinson.creepinoutils.util.util.math.ForgeVector;
 import me.creepinson.tubesplus.handler.RegistryHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
@@ -32,7 +32,7 @@ import java.util.List;
  * @author Creepinson http://gitlab.com/creepinson
  * Project tubesplus
  **/
-public class BlockStation extends BaseBlock implements IConnectable {
+public class BlockStation extends BaseBlock {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
     public static final int SHIFT = 8;
 
@@ -84,7 +84,7 @@ public class BlockStation extends BaseBlock implements IConnectable {
     @Override
     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
 
-        return !canConnectTo(blockAccess, new Vector3(pos), CreepinoUtils.getDirectionFromSide(new Vector3(pos), side.ordinal()));
+        return !canConnectTo(blockAccess, new ForgeVector(pos), CreepinoUtils.getDirectionFromSide(new ForgeVector(pos), side.ordinal()));
     }
 
     @Override
@@ -95,35 +95,35 @@ public class BlockStation extends BaseBlock implements IConnectable {
         List<AxisAlignedBB> axis = new ArrayList<AxisAlignedBB>();
 
         if (meta == EnumFacing.NORTH.ordinal() || meta == EnumFacing.NORTH.ordinal() + SHIFT) {
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.SOUTH));
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.EAST));
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.WEST));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.SOUTH));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.EAST));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.WEST));
         } else if (meta == EnumFacing.SOUTH.ordinal() || meta == EnumFacing.SOUTH.ordinal() + SHIFT) {
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.NORTH));
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.EAST));
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.WEST));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.NORTH));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.EAST));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.WEST));
         } else if (meta == EnumFacing.EAST.ordinal() || meta == EnumFacing.EAST.ordinal() + SHIFT) {
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.WEST));
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.NORTH));
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.SOUTH));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.WEST));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.NORTH));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.SOUTH));
         } else if (meta == EnumFacing.WEST.ordinal() || meta == EnumFacing.WEST.ordinal() + SHIFT) {
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.EAST));
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.NORTH));
-            axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.SOUTH));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.EAST));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.NORTH));
+            axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.SOUTH));
         }
 
         if (meta >= SHIFT) { // top
             if (entity.isSneaking() && CreepinoUtils.getBlockMetadata(world, pos.add(0, 1, 0)) == EnumFacing.UP.ordinal())
-                axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.UP));
+                axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.UP));
             else if (world.getBlockState(pos.add(0, 1, 0)).getBlock() != RegistryHandler.BLOCK_TUBE)
-                axis.add(CreepinoUtils.getCollisionBoxPart(new Vector3(pos), EnumFacing.UP));
+                axis.add(CreepinoUtils.getCollisionBoxPart(new ForgeVector(pos), EnumFacing.UP));
         } else if (entity.posY >= pos.getY())
             if (entity.isSneaking() && CreepinoUtils.getBlockMetadata(world, pos.subtract(new BlockPos(0, 1, 0))) == EnumFacing.DOWN.ordinal())
-                axis.add(CreepinoUtils.getCollisionBoxPartFloor(new Vector3(pos)));
+                axis.add(CreepinoUtils.getCollisionBoxPartFloor(new ForgeVector(pos)));
             else if (world.getBlockState(pos.subtract(new BlockPos(0, 1, 0))).getBlock() != RegistryHandler.BLOCK_TUBE)
-                axis.add(CreepinoUtils.getCollisionBoxPartFloor(new Vector3(pos)));
+                axis.add(CreepinoUtils.getCollisionBoxPartFloor(new ForgeVector(pos)));
             else if (CreepinoUtils.getBlockMetadata(world, pos.subtract(new BlockPos(0, 1, 0))) != EnumFacing.DOWN.ordinal())
-                axis.add(CreepinoUtils.getCollisionBoxPartFloor(new Vector3(pos)));
+                axis.add(CreepinoUtils.getCollisionBoxPartFloor(new ForgeVector(pos)));
 
         for (AxisAlignedBB a : axis)
             if (a != null && axisAlignedBB.intersects(a))
@@ -150,18 +150,12 @@ public class BlockStation extends BaseBlock implements IConnectable {
         return false;
     }
 
-    @Override
     public boolean canConnectTo(IBlockAccess blockAccess, Vector3 pos, EnumFacing d) {
         if (d != EnumFacing.UP && d != EnumFacing.DOWN)
             return false;
-        Block block = blockAccess.getBlockState(new Vector3(d.getXOffset(), d.getYOffset(), d.getZOffset()).toBlockPos()).getBlock();
+        Block block = blockAccess.getBlockState(new ForgeVector(d.getXOffset(), d.getYOffset(), d.getZOffset()).toBlockPos()).getBlock();
         int meta = CreepinoUtils.getBlockMetadata(blockAccess, pos.add(d.getXOffset(), d.getYOffset(), d.getZOffset())), thisMeta = CreepinoUtils.getBlockMetadata(blockAccess, pos);
         return block == this && thisMeta >= SHIFT ? meta == thisMeta - SHIFT : thisMeta + SHIFT == meta;
 
-    }
-
-    @Override
-    public boolean canConnectToStrict(IBlockAccess world, Vector3 pos, EnumFacing d) {
-        return canConnectTo(world, pos, d);
     }
 }

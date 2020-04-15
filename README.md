@@ -8,10 +8,13 @@ for the original mods Tube Transport System & Enhanced Portals.
 WORK IN PROGRESS!
 
 ## Tubes
+Transport tubes can transport entities - this includes dropped items, arrows, boats, mobs, players, etc. These tubes are linked in a *Tube Network*. 
 
+## Tube Network
+A tube network is made up of all tubes that are directly connected to each other. However, diagonal tubes do not connect. Each tube network can be configured to change the speed of transportation (shift-right clicking with an empty hand on any of the tubes), and can also be configured to route entities to a certain *destination tube*. See more about tube routing on the next section below.
 
 ## Routing
-There are two tiers of Tube Routers: basic, and advanced.
+There are two tiers of *Tube Routers*: basic, and advanced.
 
 The **basic** router is a block that will route any entities that go through it to a destination tube
 that is selected in the router GUI and conencted to the network. 

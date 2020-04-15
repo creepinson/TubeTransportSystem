@@ -1,12 +1,13 @@
 package me.creepinson.tubesplus.tile;
 
-import me.creepinson.creepinoutils.api.IConnectable;
-import me.creepinson.creepinoutils.api.util.CreepinoUtils;
-import me.creepinson.creepinoutils.api.util.math.Vector3;
-import me.creepinson.tubesplus.gui.container.ContainerTubeNetworkConfig;
-import me.creepinson.tubesplus.util.TubeNetwork;
+import me.creepinson.creepinoutils.api.creepinoutilscore.math.Vector3;
+import me.creepinson.creepinoutils.util.IConnectable;
+import me.creepinson.creepinoutils.util.util.CreepinoUtils;
+import me.creepinson.creepinoutils.util.util.math.ForgeVector;
 import me.creepinson.tubesplus.TubesPlus;
 import me.creepinson.tubesplus.block.BlockTube;
+import me.creepinson.tubesplus.gui.container.ContainerTubeNetworkConfig;
+import me.creepinson.tubesplus.util.TubeNetwork;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -41,8 +42,10 @@ public class TileEntityTube extends TileEntity implements IConnectable, IInterac
         super.onLoad();
         this.refresh();
         if (this.getNetwork() != null) {
-            this.getNetwork().setSpeed(tmpSpeed == 0 ? this.getNetwork().getSpeed() : tmpSpeed);
-            this.getNetwork().refreshConnectedTubes(new Vector3(pos));
+//            this.getNetwork().setSpeed(tmpSpeed == 0 ? this.getNetwork().getSpeed() : tmpSpeed);
+            this.getNetwork().setWorld(world);
+            this.getNetwork().refreshConnectedTubes(new ForgeVector(pos));
+            refresh();
         }
     }
 
@@ -60,36 +63,40 @@ public class TileEntityTube extends TileEntity implements IConnectable, IInterac
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         if (this.getNetwork() != null) {
-            compound.setDouble("speed", this.getNetwork().getSpeed());
+            compound.setTag("network", this.getNetwork().serializeNBT());
         }
+
         return compound;
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        this.tmpSpeed = compound.getDouble("speed");
+        this.setNetwork(new TubeNetwork(world));
+        getNetwork().deserializeNBT(compound.getCompoundTag("network"));
+        this.tmpSpeed = getNetwork().getSpeed();
+
     }
 
+    @Override
     public boolean canConnectToStrict(IBlockAccess world, Vector3 pos, EnumFacing side) {
-        return world.getBlockState(pos.add(side.getXOffset(), side.getYOffset(), side.getZOffset()).toBlockPos()).getBlock() instanceof BlockTube && CreepinoUtils.getBlockMetadata(world, pos.toBlockPos().add(side.getXOffset(), side.getYOffset(), side.getZOffset())) == CreepinoUtils.getBlockMetadata(world, pos.toBlockPos());
+        return world.getBlockState(new ForgeVector(pos.add(side.getXOffset(), side.getYOffset(), side.getZOffset())).toBlockPos()).getBlock() instanceof BlockTube && CreepinoUtils.getBlockMetadata(world, pos.add(side.getXOffset(), side.getYOffset(), side.getZOffset())) == CreepinoUtils.getBlockMetadata(world, pos);
     }
 
     @Override
     public boolean canConnectTo(IBlockAccess world, Vector3 pos, EnumFacing side) {
-        return world.getBlockState(pos.add(side.getXOffset(), side.getYOffset(), side.getZOffset()).toBlockPos()).getBlock() instanceof BlockTube;
+        return world.getBlockState(new ForgeVector(pos.add(side.getXOffset(), side.getYOffset(), side.getZOffset())).toBlockPos()).getBlock() instanceof BlockTube;
 //        return world.getBlockState(pos.toBlockPos()).getBlock() == this && CreepinoUtils.getBlockMetadata(world, pos.toBlockPos().add(side.getXOffset(), side.getYOffset(), side.getZOffset())) ==  CreepinoUtils.getBlockMetadata(world, pos.toBlockPos());
     }
 
-
     public void updateSpeed() {
         if (this.getNetwork() != null) {
-            this.getNetwork().refreshConnectedTubes(new Vector3(pos));
+            this.getNetwork().refreshConnectedTubes(new ForgeVector(pos));
             Iterator<Vector3> it = this.getNetwork().getTubes().iterator();
             while (it.hasNext()) {
                 Vector3 v = it.next();
 
-                TileEntity te = world.getTileEntity(v.toBlockPos());
+                TileEntity te = world.getTileEntity(new ForgeVector(v).toBlockPos());
                 if (te == null || te.isInvalid()) {
                     it.remove();
                 }
@@ -117,19 +124,19 @@ public class TileEntityTube extends TileEntity implements IConnectable, IInterac
             for (TileEntityTube tile : tubes) {
                 if (tile != null && !tile.isInvalid()) {
                     if (tile.getNetwork() != null && this.getNetwork() == null) {
-                        tile.getNetwork().refreshConnectedTubes(new Vector3(pos));
+                        tile.getNetwork().refreshConnectedTubes(new ForgeVector(pos));
                         this.setNetwork(tile.getNetwork());
                         if (!world.isRemote)
-                            TubesPlus.debug("Connecting to existing network at " + tile.getPos());
+                            TubesPlus.getInstance().debug("Connecting to existing network at " + tile.getPos());
                     }
                 }
             }
         } else {
             if (this.getNetwork() == null) {
                 this.setNetwork(new TubeNetwork(world));
-                this.getNetwork().refreshConnectedTubes(new Vector3(this.getPos()));
+                this.getNetwork().refreshConnectedTubes(new ForgeVector(this.getPos()));
                 if (!world.isRemote)
-                    TubesPlus.debug("Creating new network at " + this.getPos());
+                    TubesPlus.getInstance().debug("Creating new network at " + this.getPos());
             }
         }
     }

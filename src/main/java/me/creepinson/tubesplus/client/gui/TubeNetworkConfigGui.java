@@ -6,10 +6,10 @@ import me.creepinson.tubesplus.network.PacketTubeSpeed;
 import me.creepinson.tubesplus.tile.TileEntityTube;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraftforge.fml.client.config.GuiCheckBox;
 import net.minecraftforge.fml.client.config.GuiSlider;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -23,6 +23,7 @@ public class TubeNetworkConfigGui extends GuiContainer //extend GuiContainer if 
     //If you want your gui to change based on TileEntity values, reference the tile entity in the constructor
     //you must pass the tile entity using "return new GuiCustomClass(world.getTileEntity(x, y, z))" in the GuiHandler
     private GuiButton speedSlider;
+    private GuiCheckBox invert;
 
     public TubeNetworkConfigGui(TileEntityTube te) {
         super(new ContainerTubeNetworkConfig(te));
@@ -41,19 +42,21 @@ public class TubeNetworkConfigGui extends GuiContainer //extend GuiContainer if 
                     TubesPlus.NETWORK.sendToServer(new PacketTubeSpeed(container.tile.getPos(), slider.sliderValue));
                 }
             }));
+            this.buttonList.add(invert = new GuiCheckBox(1, width / 2 - 75, 85, "Invert", container.tile.getNetwork().isInverted));
         }
-        /* Parameters:
-         * button id used when checking what to do when a button is pressed
-         * The X position of the button
-         * The Y position of the button
-         * The width
-         * The height (keep this at 20 if you can)
-         * The text to be displayed on the button*/
     }
 
     @Override
     public void actionPerformed(GuiButton button) {
-
+        ContainerTubeNetworkConfig container = ((ContainerTubeNetworkConfig) inventorySlots);
+        if (button.id == invert.id) {
+            container.tile.getNetwork().isInverted = !container.tile.getNetwork().isInverted;
+            // TODO: update inverting on all tubes in network
+/*            double newValue = -container.tile.getNetwork().getSpeed();
+            container.tile.getNetwork().setSpeed(newValue);
+            container.tile.updateSpeed();
+            TubesPlus.NETWORK.sendToServer(new PacketTubeSpeed(container.tile.getPos(), newValue));*/
+        }
     }
 
     @Override

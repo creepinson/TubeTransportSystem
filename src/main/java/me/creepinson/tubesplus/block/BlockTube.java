@@ -1,16 +1,15 @@
 package me.creepinson.tubesplus.block;
 
-import me.creepinson.creepinoutils.api.util.CreepinoUtils;
-import me.creepinson.creepinoutils.api.util.math.Vector3;
 import me.creepinson.creepinoutils.base.BaseBlockWithTile;
+import me.creepinson.creepinoutils.util.util.CreepinoUtils;
+import me.creepinson.creepinoutils.util.util.VelocityUtil;
+import me.creepinson.creepinoutils.util.util.math.ForgeVector;
 import me.creepinson.tubesplus.TubesPlus;
-import me.creepinson.tubesplus.util.TubeNetwork;
 import me.creepinson.tubesplus.tile.TileEntityTube;
+import me.creepinson.tubesplus.util.TubeNetwork;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -73,18 +72,20 @@ public class BlockTube extends BaseBlockWithTile {
             if (!world.isRemote)
                 TubesPlus.getInstance().getLogger().warn("Tube network at " + pos.toString() + " is null!");
 
-            CreepinoUtils.entityAccelerate(entity, state.getValue(FACING));
-            CreepinoUtils.entityLimitSpeed(entity, 0.1);
+            VelocityUtil.accelerate(entity, state.getValue(FACING));
         } else {
-            CreepinoUtils.entityAccelerate(entity, state.getValue(FACING), network.getSpeed());
-            double speed = Math.abs(Math.sqrt(entity.motionX * entity.motionX + entity.motionY * entity.motionY + entity.motionZ * entity.motionZ));
+            double entitySpeed = Math.abs(Math.sqrt(entity.motionX * entity.motionX + entity.motionY * entity.motionY + entity.motionZ * entity.motionZ));
+            double speed = network.getSpeed();
+            if (network.isInverted)
+                VelocityUtil.accelerate(entity, state.getValue(FACING).getOpposite(), speed);
+            else
+                VelocityUtil.accelerate(entity, state.getValue(FACING), speed);
 
-/*
             if (!world.isRemote)
-                TubesPlus.debug("Speed: " + network.getSpeed());
-                // Log Speed For Testing
-*/
-            CreepinoUtils.entityLimitSpeed(entity, network.getSpeed());
+                TubesPlus.getInstance().debug("Speed: " + network.getSpeed());
+            // Log Speed For Testing
+
+//            CreepinoUtils.entityLimitSpeed(entity, network.getSpeed()*speed);
 
         }
         if (world.isAirBlock(pos.offset(EnumFacing.DOWN)) && state.getValue(FACING) != EnumFacing.UP && state.getValue(FACING) != EnumFacing.DOWN) {
@@ -112,7 +113,7 @@ public class BlockTube extends BaseBlockWithTile {
         if (((TileEntityTube) world.getTileEntity(pos)) == null || (((TileEntityTube) world.getTileEntity(pos)) != null && ((TileEntityTube) world.getTileEntity(pos)).isInvalid())) {
             return true;
         }
-        return !((TileEntityTube) world.getTileEntity(pos)).canConnectToStrict(world, new Vector3(pos), CreepinoUtils.getDirectionFromSide(new Vector3(pos), side.ordinal()));
+        return !((TileEntityTube) world.getTileEntity(pos)).canConnectToStrict(world, new ForgeVector(pos), CreepinoUtils.getDirectionFromSide(new ForgeVector(pos), side.ordinal()));
     }
 
 /*    @Override
@@ -163,9 +164,9 @@ public class BlockTube extends BaseBlockWithTile {
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
         TileEntity tile = world.getTileEntity(fromPos);
         if (tile instanceof TileEntityTube && !tile.isInvalid()) {
-            TubeNetwork network = ((TileEntityTube)tile).getNetwork();
+            TubeNetwork network = ((TileEntityTube) tile).getNetwork();
             if (network != null) {
-                network.refreshConnectedTubes(new Vector3(fromPos));
+                network.refreshConnectedTubes(new ForgeVector(fromPos));
             }
         }
     }
