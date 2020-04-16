@@ -16,7 +16,7 @@ out
 # gradle
 build
 .gradle
-libs
+#libs
 
 # other
 eclipse

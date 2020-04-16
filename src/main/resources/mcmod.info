@@ -11,6 +11,8 @@
   "credits": "polyrobot for the original code.",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": []
+  "useDependencyInformation": true,
+  "requiredMods": ["ctm"],
+  "dependencies": ["ctm"]
 }
 ]
