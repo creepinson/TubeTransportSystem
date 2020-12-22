@@ -1,0 +1,26 @@
+{
+    "__comment": "We will have a ctm_version to indicate the version that the json is built for. We will most likely not need it, but who knows? -D ",
+    "ctm":{
+        "ctm_version": 1,
+        "type":"vertical",
+        "layer":"CUTOUT",
+        "textures": [
+            "tubesplus:blocks/tube/0",
+            "tubesplus:blocks/tube/1",
+            "tubesplus:blocks/tube/2",
+            "tubesplus:blocks/tube/3",
+            "tubesplus:blocks/tube/4",
+            "tubesplus:blocks/tube/5",
+            "tubesplus:blocks/tube/6",
+            "tubesplus:blocks/tube/7",
+            "tubesplus:blocks/tube/8",
+            "tubesplus:blocks/tube/9",
+            "tubesplus:blocks/tube/10",
+            "tubesplus:blocks/tube/11",
+            "tubesplus:blocks/tube/12",
+            "tubesplus:blocks/tube/13",
+            "tubesplus:blocks/tube/14",
+            "tubesplus:blocks/tube/15"
+        ]
+    }
+}

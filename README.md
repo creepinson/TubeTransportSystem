@@ -1,7 +1,7 @@
 # TubesPlus
 Original: https://github.com/enhancedportals/TubeTransportSystem
 Credits go to [polyrobot](https://www.curseforge.com/members/polyrobot/projects)
-for the original mods Tube Transport System & Enhanced Portals.
+for the original mods Tube Transport System.
 
 # Documentation
 
@@ -9,6 +9,11 @@ WORK IN PROGRESS!
 
 ## Tubes
 Transport tubes can transport entities - this includes dropped items, arrows, boats, mobs, players, etc. These tubes are linked in a *Tube Network*. 
+
+### Rotating
+
+You can either face the direction you want the tube to face when you place it, 
+or you can use [a wrench mod like this.](https://www.curseforge.com/minecraft/mc-mods/wrench)
 
 ## Tube Network
 A tube network is made up of all tubes that are directly connected to each other. However, diagonal tubes do not connect. Each tube network can be configured to change the speed of transportation (shift-right clicking with an empty hand on any of the tubes), and can also be configured to route entities to a certain *destination tube*. See more about tube routing on the next section below.

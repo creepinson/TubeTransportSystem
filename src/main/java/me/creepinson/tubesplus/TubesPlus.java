@@ -1,79 +1,57 @@
 package me.creepinson.tubesplus;
 
-import me.creepinson.creepinoutils.base.BaseMod;
-import me.creepinson.creepinoutils.base.CreativeTab;
-import me.creepinson.creepinoutils.util.util.CreativeTabCallback;
-import me.creepinson.tubesplus.client.gui.GuiHandler;
-import me.creepinson.tubesplus.handler.RegistryHandler;
-import me.creepinson.tubesplus.network.PacketTubeSpeed;
-import me.creepinson.tubesplus.tile.TileEntityTube;
-import net.minecraft.init.Items;
+import mcp.MethodsReturnNonnullByDefault;
+import me.creepinson.tubesplus.client.gui.TubeNetworkConfigGui;
+import me.creepinson.tubesplus.handler.TubesPlusRegistryHandler;
+import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Creepinson http://gitlab.com/creepinson
  * Project tubesplus
  **/
 
-@Mod(modid = TubesPlus.MOD_ID, name = TubesPlus.MOD_NAME, version = TubesPlus.MOD_VERSION/*, dependencies = "required-after:"*/)
-public class TubesPlus extends BaseMod {
-    public static final String MOD_ID = "tubesplus", MOD_ID_SHORT = "tubes", MOD_NAME = "Tubes Plus", MOD_URL = "", MOD_VERSION = "1.0.0", MOD_DEPENDENCIES = "";
-    public static final SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel(MOD_ID);
+@Mod(TubesPlus.MOD_ID)
+public class TubesPlus {
+    public static final String MOD_ID = "tubesplus";
 
-    @Mod.Instance(TubesPlus.MOD_ID)
-    private static TubesPlus INSTANCE;
-
-    // TODO: move to settings file
-    private boolean gravityEnabled;
-
-    public static TubesPlus getInstance() {
-        return INSTANCE;
-    }
+    public static final Logger LOGGER = LogManager.getLogger();
+    private static ItemGroup itemGroup;
 
     public TubesPlus() {
-        super(MOD_URL, null, MOD_ID, MOD_VERSION);
-        genConfig = false;
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
+/*        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);*/
+        itemGroup = new ItemGroup(MOD_ID) {
+            @Override
+            public @NotNull ItemStack createIcon() {
+                return new ItemStack(TubesPlusRegistryHandler.TUBE_ITEM.get());
+            }
+        };
+        TubesPlusRegistryHandler.init();
 //      this.hasCreativeTab = false;
     }
 
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        super.preInit(event, new CreativeTabCallback() {
-            @Override
-            public void init(CreativeTab tab) {
-                tab.setItem(new ItemStack(Items.APPLE));
-            }
-        });
-//        EasyRegistry.registerBlockWithItem(BlockHandler.ANIMATION_TEST_BLOCK, new ResourceLocation(MOD_ID, "animation_test_block"));
+    public static ItemGroup getItemGroup() {
+        return itemGroup;
     }
 
-    @Mod.EventHandler
-    @Override
-    public void init(FMLInitializationEvent event) {
-        super.init(event);
-
-        GameRegistry.registerTileEntity(TileEntityTube.class, RegistryHandler.BLOCK_TUBE.getRegistryName());
-        NETWORK.registerMessage(PacketTubeSpeed.Handler.class, PacketTubeSpeed.class, 0, Side.SERVER);
-        NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
-
-        //        GameRegistry.registerTileEntity(TileEntityAnimationTest.class, new ResourceLocation(MOD_ID, "tile_animation_test"));
+    public void clientSetup(FMLClientSetupEvent event) {
+        ScreenManager.registerFactory(TubesPlusRegistryHandler.TUBE_CONFIG_CONTAINER.get(), TubeNetworkConfigGui::new);
     }
 
-    @Mod.EventHandler
-    @Override
-    public void postInit(FMLPostInitializationEvent event) {
-        super.postInit(event);
+    public void setup(FMLCommonSetupEvent event) {
+
     }
 
-    public boolean isGravityEnabled() {
-        return gravityEnabled;
-    }
 }

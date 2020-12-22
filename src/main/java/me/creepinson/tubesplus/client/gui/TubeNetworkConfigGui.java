@@ -1,85 +1,77 @@
 package me.creepinson.tubesplus.client.gui;
 
-import me.creepinson.tubesplus.TubesPlus;
-import me.creepinson.tubesplus.gui.container.ContainerTubeNetworkConfig;
-import me.creepinson.tubesplus.network.PacketTubeSpeed;
-import me.creepinson.tubesplus.tile.TileEntityTube;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraftforge.fml.client.config.GuiCheckBox;
-import net.minecraftforge.fml.client.config.GuiSlider;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.theoparis.creepinoutils.util.client.gui.Checkbox;
+import com.theoparis.creepinoutils.util.text.GroupTextComponent;
+import me.creepinson.tubesplus.gui.container.TubeNetworkConfigContainer;
+import me.creepinson.tubesplus.handler.TubesPlusRegistryHandler;
+import me.creepinson.tubesplus.network.TubeUpdatePacket;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.fml.client.gui.widget.Slider;
 
 import java.awt.*;
 
 /**
  * @author Creepinson http://gitlab.com/creepinson
- * Project Tubes Plus
+ * Tubes Plus Mod
  **/
-@SideOnly(Side.CLIENT)
-public class TubeNetworkConfigGui extends GuiContainer //extend GuiContainer if you want your gui to have an inventory
+
+public class TubeNetworkConfigGui extends ContainerScreen<TubeNetworkConfigContainer> //extend GuiContainer if you want your gui to have an inventory
 {
-    //If you want your gui to change based on TileEntity values, reference the tile entity in the constructor
-    //you must pass the tile entity using "return new GuiCustomClass(world.getTileEntity(x, y, z))" in the GuiHandler
-    private GuiButton speedSlider;
-    private GuiCheckBox invert;
+    private Checkbox invert;
 
-    public TubeNetworkConfigGui(TileEntityTube te) {
-        super(new ContainerTubeNetworkConfig(te));
+    public TubeNetworkConfigGui(TubeNetworkConfigContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+        super(screenContainer, inv, titleIn);
     }
 
     @Override
-    public void initGui() {
-        this.buttonList.clear();
-        ContainerTubeNetworkConfig container = ((ContainerTubeNetworkConfig) inventorySlots);
+    public void init() {
+        this.buttons.clear();
+        TubeNetworkConfigContainer container = getContainer();
         if (container.tile.getNetwork() != null) {
-            this.buttonList.add(speedSlider = new GuiSlider(0, (width / 2) - 75, 50, 150, 25, "Tube Speed: ", "", container.tile.getNetwork().minSpeed, container.tile.getNetwork().maxSpeed, container.tile.getNetwork().getSpeed(), true, true, new GuiSlider.ISlider() {
-                @Override
-                public void onChangeSliderValue(GuiSlider slider) {
-                    container.tile.getNetwork().setSpeed(slider.sliderValue);
-                    container.tile.updateSpeed();
-                    TubesPlus.NETWORK.sendToServer(new PacketTubeSpeed(container.tile.getPos(), slider.sliderValue));
-                }
+            // If you want your gui to change based on TileEntity values, reference the tile entity in the constructor
+            // you must pass the tile entity using "return new GuiCustomClass(world.getTileEntity(x, y, z))" in the GuiHandler
+            this.buttons.add(new Slider((width / 2) - 75, 50, 150, 25, new StringTextComponent("Tube Speed: "), new StringTextComponent(""), container.tile.getNetwork().minSpeed, container.tile.getNetwork().maxSpeed, container.tile.getNetwork().getSpeed(), true, true, (slider) -> {
+                double currentVal = ((Slider) slider).sliderValue;
+                container.tile.getNetwork().setSpeed(currentVal);
+                container.tile.refresh();
+                TubesPlusRegistryHandler.NETWORK.sendToServer(new TubeUpdatePacket(container.tile.getPos(), currentVal, invert.isChecked()));
             }));
-            this.buttonList.add(invert = new GuiCheckBox(1, width / 2 - 75, 85, "Invert", container.tile.getNetwork().isInverted));
+            invert = new Checkbox(width / 2 - 75, 85, 50, 50, new StringTextComponent("Invert"), container.tile.getNetwork().isInverted, button -> {
+                container.tile.getNetwork().isInverted = !container.tile.getNetwork().isInverted;
+                // container.tile.updateSpeed();
+                // TODO: update inverting on all tubes in network
+                double newValue = -container.tile.getNetwork().getSpeed();
+                container.tile.getNetwork().setSpeed(newValue);
+                container.tile.refresh();
+                TubesPlusRegistryHandler.NETWORK.sendToServer(new TubeUpdatePacket(container.tile.getPos(), newValue, invert.isChecked()));
+            });
+            this.buttons.add(invert);
         }
     }
 
     @Override
-    public void actionPerformed(GuiButton button) {
-        ContainerTubeNetworkConfig container = ((ContainerTubeNetworkConfig) inventorySlots);
-        if (button.id == invert.id) {
-            container.tile.getNetwork().isInverted = !container.tile.getNetwork().isInverted;
-            // TODO: update inverting on all tubes in network
-/*            double newValue = -container.tile.getNetwork().getSpeed();
-            container.tile.getNetwork().setSpeed(newValue);
-            container.tile.updateSpeed();
-            TubesPlus.NETWORK.sendToServer(new PacketTubeSpeed(container.tile.getPos(), newValue));*/
-        }
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+
     }
 
     @Override
-    public void drawScreen(int x, int y, float f) {
-        drawDefaultBackground();
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
 
+    }
 
-        drawRect(width / 4, 0, width - (width / 4), height / 2, Color.gray.getRGB());
+    @Override
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        // TODO: make it look nicer (gradient?)
+        fill(matrixStack, width / 4, 0, width - (width / 4), height / 2, Color.gray.getRGB());
         // Make sure your background texture is a multiple of 256x256.
         // The xSizeOfTexture and ySizeOfTexture assume that the texture is 256x256. so 128 and 128 always reference half of the texture.
         // Look in the Gui class to see what else you can do here (like rendering textures and strings)
         String str = "Tube Network Configuration";
-        this.drawCenteredString(fontRenderer, str, width / 2, 25, Color.white.getRGB()); //this is where the white variable we set up at the beginning is used
-        super.drawScreen(x, y, f);
-        /*Here is a trick:
-           If you reset the texture after "super.drawScreen(x, y, f);" (this.mc.renderEngine.bindTexture("path/to/the/background/texture"),
-           you can draw on top of everything, including buttons.
-           Use this to texture buttons, if you don't want them to have text.`
-        */
-    }
-
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-
+        font.drawString(matrixStack, str, width / 2f, 25f, Color.white.getRGB()); //this is where the white variable we set up at the beginning is used
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 }

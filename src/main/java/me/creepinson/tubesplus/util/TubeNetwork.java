@@ -1,16 +1,17 @@
 package me.creepinson.tubesplus.util;
 
 
-import me.creepinson.creepinoutils.api.creepinoutilscore.math.Vector3;
-import me.creepinson.creepinoutils.util.network.BaseNetwork;
-import me.creepinson.creepinoutils.util.util.BlockUtils;
-import me.creepinson.creepinoutils.util.util.math.ForgeVector;
-import me.creepinson.tubesplus.tile.TileEntityTube;
+import com.theoparis.creepinoutils.util.BlockUtils;
+import me.creepinson.tubesplus.tile.TubeTile;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,18 +19,23 @@ import java.util.Set;
  * @author Creepinson http://gitlab.com/creepinson
  * Project tubesplus
  **/
-public class TubeNetwork extends BaseNetwork<TileEntityTube> {
+public class TubeNetwork implements INBTSerializable<CompoundNBT>, Serializable {
     public static final double INCREMENT = 0.01;
-    private Set<Vector3> tubes;
+    public World world;
+    private Set<BlockPos> tubes;
     public final double maxSpeed = 1;
     public final double minSpeed = 0.01;
     private double speed = 0.1;
     public static final double maxAcceleration = 5;
     public boolean isInverted;
 
-    public TubeNetwork(@Nonnull World world) {
-        super(world);
+    public TubeNetwork(@Nullable World world) {
+        this.world = world;
         this.tubes = new HashSet<>();
+    }
+
+    public TubeNetwork() {
+        this(null);
     }
 
 /*    public Set<Vector3> getDestinations() {
@@ -37,16 +43,15 @@ public class TubeNetwork extends BaseNetwork<TileEntityTube> {
     }*/
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        NBTTagCompound nbt = super.serializeNBT();
-        nbt.setDouble("speed", this.speed);
-        nbt.setBoolean("inverted", this.isInverted);
+    public CompoundNBT serializeNBT() {
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.putDouble("speed", this.speed);
+        nbt.putBoolean("inverted", this.isInverted);
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(CompoundNBT nbt) {
         this.speed = nbt.getDouble("speed");
         this.isInverted = nbt.getBoolean("inverted");
     }
@@ -55,16 +60,11 @@ public class TubeNetwork extends BaseNetwork<TileEntityTube> {
         // TODO: add destination routing
     }
 
-    @Override
-    public void refresh() {
-        super.refresh();
+    public void refreshConnectedTubes(BlockPos startingPosition) {
+        tubes = BlockUtils.INSTANCE.getTiles(world, startingPosition, TubeTile.class);
     }
 
-    public void refreshConnectedTubes(Vector3 startingPosition) {
-        tubes = BlockUtils.getTiles(world, new ForgeVector(startingPosition), TileEntityTube.class);
-    }
-
-    public Set<Vector3> getTubes() {
+    public Set<BlockPos> getTubes() {
         return tubes;
     }
 
@@ -76,5 +76,9 @@ public class TubeNetwork extends BaseNetwork<TileEntityTube> {
         if (speed < minSpeed) speed = minSpeed;
         if (speed > maxSpeed) speed = maxSpeed;
         this.speed = speed;
+    }
+
+    public World getWorld() {
+        return world;
     }
 }
