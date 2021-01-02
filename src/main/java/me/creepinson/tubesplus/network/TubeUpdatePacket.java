@@ -57,7 +57,8 @@ public class TubeUpdatePacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TubesPlus.LOGGER.info("Processing packet data.");
+            // TODO: debug config option for debug logging
+            TubesPlus.LOGGER.info("Processing packet data: Pos" + this.getPos() + "; speed: " + this.getSpeed());
             TileEntity te = ctx.get().getSender().getServerWorld().getTileEntity(this.getPos());
             if (te instanceof TubeTile && !te.isRemoved()) {
                 TubeTile tile = (TubeTile) te;

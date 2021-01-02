@@ -1,4 +1,5 @@
 {
   "block.tubesplus.tube": "Transportation Tube",
-  "itemGroup.tubesplus": "Tubes+"
+  "itemGroup.tubesplus": "Tubes+",
+  "container.tube": "Tube Network Configuration"
 }

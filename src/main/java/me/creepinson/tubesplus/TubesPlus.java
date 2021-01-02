@@ -4,6 +4,8 @@ import mcp.MethodsReturnNonnullByDefault;
 import me.creepinson.tubesplus.client.gui.TubeNetworkConfigGui;
 import me.creepinson.tubesplus.handler.TubesPlusRegistryHandler;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -48,6 +50,7 @@ public class TubesPlus {
 
     public void clientSetup(FMLClientSetupEvent event) {
         ScreenManager.registerFactory(TubesPlusRegistryHandler.TUBE_CONFIG_CONTAINER.get(), TubeNetworkConfigGui::new);
+        RenderTypeLookup.setRenderLayer(TubesPlusRegistryHandler.TUBE_BLOCK.get(), RenderType.getCutout());
     }
 
     public void setup(FMLCommonSetupEvent event) {

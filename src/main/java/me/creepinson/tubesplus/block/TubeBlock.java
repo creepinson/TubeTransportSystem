@@ -3,6 +3,8 @@ package me.creepinson.tubesplus.block;
 import com.theoparis.creepinoutils.util.BlockUtils;
 import com.theoparis.creepinoutils.util.CreepinoUtils;
 import com.theoparis.creepinoutils.util.VelocityUtil;
+import com.theoparis.creepinoutils.util.text.GroupTextComponent;
+
 import me.creepinson.tubesplus.TubesPlus;
 import me.creepinson.tubesplus.event.TubeTriggerEvent;
 import me.creepinson.tubesplus.handler.TubesPlusRegistryHandler;
@@ -34,9 +36,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author Creepinson http://gitlab.com/creepinson
@@ -54,39 +58,40 @@ public class TubeBlock extends DirectionalBlock {
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void onEntityCollision(@NotNull BlockState state, @NotNull World world, @NotNull BlockPos pos, @NotNull Entity entity) {
         if (MinecraftForge.EVENT_BUS.post(new TubeTriggerEvent(world, pos, state, entity))) return;
-        BlockUtils.INSTANCE.getTile(world, pos).filter(t -> t instanceof TubeTile).map(t -> (TubeTile) t).ifPresent(tile -> {
-            TubeNetwork network = tile.getNetwork();
+        if (!entity.isSneaking())
+            BlockUtils.INSTANCE.getTile(world, pos).filter(t -> t instanceof TubeTile).map(t -> (TubeTile) t).ifPresent(tile -> {
+                TubeNetwork network = tile.getNetwork();
 
-            if (network == null) {
-                if (!world.isRemote)
-                    TubesPlus.LOGGER.warn("Tube network at " + pos.toString() + " is null!");
+                if (network == null) {
+                    if (!world.isRemote)
+                        TubesPlus.LOGGER.warn("Tube network at " + pos.toString() + " is null!");
 
-                VelocityUtil.INSTANCE.accelerate(entity, state.get(FACING), 0.1F);
-            } else {
+                    VelocityUtil.INSTANCE.accelerate(entity, state.get(FACING), 0.1F);
+                } else {
 //            double entitySpeed = Math.abs(Math.sqrt(entity.getMotion().x * entity.e + entity.motionY * entity.motionY + entity.motionZ * entity.motionZ));
-                double speed = network.getSpeed();
-                if (network.isInverted)
-                    VelocityUtil.INSTANCE.accelerate(entity, state.get(FACING).getOpposite(), speed);
-                else
-                    VelocityUtil.INSTANCE.accelerate(entity, state.get(FACING), speed);
+                    double speed = network.getSpeed();
+                    if (network.isInverted)
+                        VelocityUtil.INSTANCE.accelerate(entity, state.get(FACING).getOpposite(), speed);
+                    else
+                        VelocityUtil.INSTANCE.accelerate(entity, state.get(FACING), speed);
 
-                //                TubesPlus.LOGGER("Speed: " + network.getSpeed());
-                //            CreepinoUtils.entityLimitSpeed(entity, network.getSpeed()*speed);
+                    //                TubesPlus.LOGGER("Speed: " + network.getSpeed());
+                    //            CreepinoUtils.entityLimitSpeed(entity, network.getSpeed()*speed);
 
-            }
-            if (world.isAirBlock(pos.offset(Direction.DOWN)) && state.get(FACING) != Direction.UP && state.get(FACING) != Direction.DOWN) {
-                entity.setMotion(entity.getMotion().x, 0, entity.getMotion().z);
-                entity.velocityChanged = true;
-            }
+                }
+                if (world.isAirBlock(pos.offset(Direction.DOWN)) && state.get(FACING) != Direction.UP && state.get(FACING) != Direction.DOWN) {
+                    entity.setMotion(entity.getMotion().x, 0, entity.getMotion().z);
+                    entity.velocityChanged = true;
+                }
 
-            CreepinoUtils.INSTANCE.resetEntityFall(entity);
-        });
+            });
+        CreepinoUtils.INSTANCE.resetEntityFall(entity);
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+    public @NotNull VoxelShape getCollisionShape(@NotNull BlockState state, @NotNull IBlockReader world, @NotNull BlockPos pos, @NotNull ISelectionContext context) {
         return VoxelShapes.empty();
     }
 
@@ -126,7 +131,7 @@ public class TubeBlock extends DirectionalBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(@NotNull BlockState state, @NotNull World world, @NotNull BlockPos pos, @NotNull Block block, @NotNull BlockPos fromPos, boolean isMoving) {
         getTE(world, pos).ifPresent(tile -> {
             /*TubeNetwork network = ((TubeTile) tile).getNetwork();
             if (network != null) {
@@ -138,7 +143,7 @@ public class TubeBlock extends DirectionalBlock {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public @NotNull ActionResultType onBlockActivated(@NotNull BlockState state, World world, @NotNull BlockPos pos, @NotNull PlayerEntity player, @NotNull Hand hand, @NotNull BlockRayTraceResult hit) {
         if (!world.isRemote) getTE(world, pos).map(tile -> {
             if (player.getHeldItem(hand) != ItemStack.EMPTY) return tile;
 
@@ -146,14 +151,18 @@ public class TubeBlock extends DirectionalBlock {
                 NetworkHooks.openGui((ServerPlayerEntity) player, tile, extraData -> {
                     extraData.writeBlockPos(pos);
                 });
-
+            else {
+                tile.getNetwork().destination = pos;
+                tile.refresh();
+                player.sendMessage(new GroupTextComponent().string("Set network destination to " + pos.toString()), UUID.randomUUID());
+            }
             return tile;
         });
         return ActionResultType.SUCCESS;
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
+    public void onBlockAdded(@NotNull BlockState state, @NotNull World world, @NotNull BlockPos pos, @NotNull BlockState oldState, boolean isMoving) {
         super.onBlockAdded(state, world, pos, oldState, isMoving);
         if (!world.isRemote)
             getTE(world, pos).ifPresent(TubeTile::updateConnectedBlocks);

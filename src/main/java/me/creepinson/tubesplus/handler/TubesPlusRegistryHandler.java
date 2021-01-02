@@ -32,7 +32,7 @@ public class TubesPlusRegistryHandler {
     public static final RegistryObject<TileEntityType<TubeTile>> TUBE_TILE = TILES.register("tube_tile", () -> TileEntityType.Builder.create(TubeTile::new, TubesPlusRegistryHandler.TUBE_BLOCK.get()).build(null));
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, TubesPlus.MOD_ID);
-    public static final RegistryObject<TubeBlock> TUBE_BLOCK = BLOCKS.register("tube", () -> new TubeBlock(Block.Properties.create(Material.ROCK).variableOpacity()));
+    public static final RegistryObject<TubeBlock> TUBE_BLOCK = BLOCKS.register("tube", () -> new TubeBlock(Block.Properties.create(Material.ROCK).variableOpacity().notSolid()));
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, TubesPlus.MOD_ID);
     public static final RegistryObject<Item> TUBE_ITEM = ITEMS.register("tube", () -> new BlockItem(TUBE_BLOCK.get(), new Item.Properties().group(TubesPlus.getItemGroup())));

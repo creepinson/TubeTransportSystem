@@ -9,7 +9,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -20,15 +19,17 @@ import java.util.Set;
  * Project tubesplus
  **/
 public class TubeNetwork implements INBTSerializable<CompoundNBT>, Serializable {
-    public static final double INCREMENT = 0.01;
+	private static final long serialVersionUID = 1L;
+	public static final double INCREMENT = 0.01;
     public World world;
     private Set<BlockPos> tubes;
-    public final double maxSpeed = 1;
+    public final double maxSpeed = 10;
     public final double minSpeed = 0.01;
     private double speed = 0.1;
     public static final double maxAcceleration = 5;
     public boolean isInverted;
-
+    public BlockPos destination = BlockPos.ZERO;
+    
     public TubeNetwork(@Nullable World world) {
         this.world = world;
         this.tubes = new HashSet<>();

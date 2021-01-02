@@ -33,7 +33,7 @@ import java.util.Objects;
  **/
 public class TubeTile extends TileEntity implements INamedContainerProvider, IConnectable {
     private TubeNetwork network;
-
+    
     public TubeTile() {
         super(TubesPlusRegistryHandler.TUBE_TILE.get());
     }
@@ -41,7 +41,8 @@ public class TubeTile extends TileEntity implements INamedContainerProvider, ICo
     @Override
     public void setWorldAndPos(@NotNull World world, @NotNull BlockPos pos) {
         super.setWorldAndPos(world, pos);
-        this.setNetwork(new TubeNetwork(world));
+        if (this.getNetwork() == null) this.setNetwork(new TubeNetwork(world));
+        else this.getNetwork().world = this.world;
     }
 
     public TubeNetwork getNetwork() {
@@ -50,12 +51,12 @@ public class TubeTile extends TileEntity implements INamedContainerProvider, ICo
 
     public void setNetwork(TubeNetwork newNet) {
         this.network = newNet;
+        this.markDirty();
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        this.refresh();
         if (this.getNetwork() != null) {
 //            this.getNetwork().setSpeed(tmpSpeed == 0 ? this.getNetwork().getSpeed() : tmpSpeed);
             this.getNetwork().refreshConnectedTubes(pos);
@@ -81,9 +82,9 @@ public class TubeTile extends TileEntity implements INamedContainerProvider, ICo
     @Override
     public void read(@NotNull BlockState state, @NotNull CompoundNBT nbt) {
         super.read(state, nbt);
-        if (nbt.contains("network") && this.network != null) {
+        if (this.network == null) this.setNetwork(new TubeNetwork(null));
+        if (nbt.contains("network"))
             getNetwork().deserializeNBT(nbt.getCompound("network"));
-        }
     }
 
 
@@ -119,6 +120,8 @@ public class TubeTile extends TileEntity implements INamedContainerProvider, ICo
                     }
                 }
             }
+            this.updateConnectedBlocks();
+            this.markDirty();
         }
     }
 
@@ -151,6 +154,7 @@ public class TubeTile extends TileEntity implements INamedContainerProvider, ICo
                 }
             }
         }
+        this.markDirty();
     }
 
     @Nullable
